@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { updateToken } from "./modules/spotify";
+import SpotifyWebApi from "spotify-web-api-node";
 
 export const GoodToken = async (
   req: Request,

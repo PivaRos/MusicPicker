@@ -9,9 +9,19 @@ import {
 } from "./modules/spotify";
 import { generateRandomString } from "./utility";
 import { GoodToken } from "./middleware";
+import SpotifyWebApi from "spotify-web-api-node";
+import { copyFileSync } from "node:fs";
+
 require("dotenv").config();
 
 const app = express();
+
+var localStorage: any = null;
+
+if (typeof localStorage === "undefined" || localStorage === null) {
+  var LocalStorage = require("node-localstorage").LocalStorage;
+  localStorage = new LocalStorage("./scratch");
+}
 
 enum platform {
   SPOTIFY = "spotify",
@@ -20,12 +30,33 @@ enum platform {
 
 const PLATFORM = platform.SPOTIFY;
 
-app.locals.token = "";
-app.use(GoodToken);
-
-const redirect_uri = "http://lcoalhost:9000/callback/spotify";
+var redirect_uri = "http://localhost:9000/callback/spotify";
 const client_id = process.env.ClientID || "";
 const client_secret = process.env.ClientSecret || "";
+
+const API = new SpotifyWebApi({
+  clientId: client_id,
+  clientSecret: client_secret,
+  redirectUri: redirect_uri,
+});
+
+const Token = localStorage.getItem("Token");
+const UpdateToken = localStorage.getItem("UpdateToken");
+
+if (Token && UpdateToken) {
+  API.setAccessToken(Token);
+  API.setRefreshToken(UpdateToken);
+}
+
+var scopes = [
+  "user-read-private",
+  "user-read-email",
+  "user-modify-playback-state",
+];
+var state = "some-state-of-my-choice";
+app.locals.loginUri = API.createAuthorizeURL(scopes, state, true);
+
+app.locals.API = API;
 
 app.get("/search/:query", async (req: Request, res: Response) => {
   try {
@@ -35,6 +66,7 @@ app.get("/search/:query", async (req: Request, res: Response) => {
     )) as searchResult;
 
     res.status(200);
+
     res.json(searchResponse);
   } catch (e) {
     console.log(e);
@@ -43,44 +75,57 @@ app.get("/search/:query", async (req: Request, res: Response) => {
 });
 
 app.get("/queue/add/:track_id", async (req: Request, res: Response) => {
-  const sd = await aaass2(req.app.locals.token);
-  console.log(sd);
-  // const result = await addToQueue("", req.app.locals.token);
-  // console.log(result);
-  return res.sendStatus(200);
+  try {
+    const API = req.app.locals.API as SpotifyWebApi;
+    const result = await API.addToQueue(req.params.track_id);
+    return res.sendStatus(200);
+  } catch {
+    res.sendStatus(500);
+  }
+});
+
+app.get("/player/pause", async (req: Request, res: Response) => {
+  try {
+    const API = req.app.locals.API as SpotifyWebApi;
+    API.pause();
+
+    return res.sendStatus(200);
+  } catch {
+    res.sendStatus(500);
+  }
 });
 
 app.get("/login", function (req, res) {
-  console.log("client id : " + client_id);
-  var state = generateRandomString(16);
-  var scope = "user-read-private user-read-email";
-
-  res.redirect(
-    `https://accounts.spotify.com/authorize?response_type=code&client_id=${client_id}&scope=${scope}&redirect_uri=${redirect_uri}&state=${state}`
-  );
+  res.redirect(req.app.locals.loginUri);
 });
 
-app.get("/callback/spotify", function (req, res) {
-  var code = req.query.code || null;
-  var state = req.query.state || null;
+app.get("/callback/spotify", async function (req, res) {
+  try {
+    var code = req.query.code || null;
+    var state = req.query.state || null;
 
-  if (state === null) {
-    res.redirect("/#error=state_mismatch");
-  } else {
-    var authOptions = {
-      url: "https://accounts.spotify.com/api/token",
-      form: {
-        code: code,
-        redirect_uri: redirect_uri,
-        grant_type: "authorization_code",
-      },
-      headers: {
-        Authorization:
-          "Basic " +
-          Buffer.from(client_id + ":" + client_secret).toString("base64"),
-      },
-      json: true,
-    };
+    if (state === null) {
+      res.redirect("/#error=state_mismatch");
+    } else {
+      if (code) {
+        const resGrant = await API.authorizationCodeGrant(code.toString());
+        if (resGrant.statusCode === 200) {
+          console.log(resGrant.body);
+
+          localStorage.setItem("Token", resGrant.body.access_token);
+          localStorage.setItem("UpdateToken", resGrant.body.refresh_token);
+          API.setAccessToken(resGrant.body.access_token);
+          API.setRefreshToken(resGrant.body.refresh_token);
+          return res.sendStatus(200);
+        } else {
+          return res.sendStatus(401);
+        }
+      }
+    }
+    return res.sendStatus(500);
+  } catch (e) {
+    console.log(e);
+    return res.sendStatus(401);
   }
 });
 
