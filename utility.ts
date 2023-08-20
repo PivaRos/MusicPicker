@@ -18,21 +18,38 @@ export var generateRandomString = function (length: number) {
   return text;
 };
 
-export const refreshAccessToken = async (app: any) => {
-  const API = app.locals.API as SpotifyWebApi;
-  const token = await API.refreshAccessToken();
-  API.setAccessToken(token.body.access_token);
-  API.setRefreshToken(token.body.refresh_token ? token.body.refresh_token : "");
-  localStorage.setItem("Token", token.body.access_token);
-  localStorage.setItem("UpdateToken", token.body.refresh_token);
-  setInterval(async () => {
-    const API = app.locals.API as SpotifyWebApi;
+export const refreshAccessToken = async (API: SpotifyWebApi) => {
+  let myInterval;
+  try {
+    const Token = localStorage.getItem("Token");
+    const UpdateToken = localStorage.getItem("UpdateToken");
+    if (Token && UpdateToken) {
+      API.setAccessToken(Token);
+      API.setRefreshToken(UpdateToken);
+    }
+    const styles = [
+      "color: green",
+      "background: yellow",
+      "font-size: 30px",
+      "border: 1px solid red",
+      "text-shadow: 2px 2px black",
+      "padding: 10px",
+    ].join(";");
+    console.log("\u001b[1;44m Refreshing Access Token...");
     const token = await API.refreshAccessToken();
     API.setAccessToken(token.body.access_token);
-    API.setRefreshToken(
-      token.body.refresh_token ? token.body.refresh_token : ""
-    );
+    if (token.body.refresh_token) {
+      API.setRefreshToken(token.body.refresh_token);
+      localStorage.setItem("UpdateToken", token.body.refresh_token);
+    }
     localStorage.setItem("Token", token.body.access_token);
-    localStorage.setItem("UpdateToken", token.body.refresh_token);
-  }, 3599900);
+    console.log("\u001b[1;44m Finished Refreshing Token !");
+    myInterval = setInterval(async () => {
+      refreshAccessToken(API);
+    }, 3599900);
+  } catch (e: any) {
+    clearInterval(myInterval);
+    console.log(e.message);
+    console.log("\u001b[1;31m please login /auth/login");
+  }
 };

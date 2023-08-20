@@ -55,13 +55,7 @@ const API = new SpotifyWebApi({
 });
 app.locals.API = API;
 
-const Token = localStorage.getItem("Token");
-const UpdateToken = localStorage.getItem("UpdateToken");
-if (Token && UpdateToken) {
-  API.setAccessToken(Token);
-  API.setRefreshToken(UpdateToken);
-  refreshAccessToken(app);
-}
+refreshAccessToken(API);
 
 var scopes = [
   "user-read-private",
