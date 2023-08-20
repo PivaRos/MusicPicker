@@ -8,4 +8,5 @@ export enum AppPlatform {
 export type appConfig = {
   platform: AppPlatform;
   genres?: string[];
+  minutes_between_queue_adds: number;
 };

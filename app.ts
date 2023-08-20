@@ -13,13 +13,26 @@ import path from "path";
 import session from "express-session";
 import AuthRouter from "./routers/auth";
 import AdminRouter from "./routers/admin";
+import QueueRouter from "./routers/queue";
 
 import callbackRouter from "./routers/callback";
 import { appConfig } from "./interfaces";
-import { checkWasAdded } from "./middleware";
+import { checkWasAdded, hasDevice } from "./middleware";
 import { refreshAccessToken } from "./utility";
+import PlayerRouter from "./routers/player";
 
 require("dotenv").config();
+
+var scopes = [
+  "user-read-private",
+  "user-read-email",
+  "user-modify-playback-state",
+  "app-remote-control",
+  "streaming",
+  "user-read-currently-playing",
+  "user-read-playback-state",
+];
+var state = "some-state-of-my-choice";
 
 const app = express();
 
@@ -34,6 +47,8 @@ app.use(
 app.use("/auth", AuthRouter);
 app.use("/callback", callbackRouter);
 app.use("/admin", AdminRouter);
+app.use("/queue", QueueRouter);
+app.use("/player", PlayerRouter);
 
 var localStorage: any = null;
 if (typeof localStorage === "undefined" || localStorage === null) {
@@ -56,17 +71,6 @@ const API = new SpotifyWebApi({
 app.locals.API = API;
 
 refreshAccessToken(API);
-
-var scopes = [
-  "user-read-private",
-  "user-read-email",
-  "user-modify-playback-state",
-  "app-remote-control",
-  "streaming",
-  "user-read-currently-playing",
-  "user-read-playback-state",
-];
-var state = "some-state-of-my-choice";
 app.locals.loginUri = API.createAuthorizeURL(scopes, state, true);
 
 app.get("/search/:query", async (req: Request, res: Response) => {
@@ -96,96 +100,10 @@ app.get("/search/:query", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/queue/add/:track_id", checkWasAdded, async (req: any, res: any) => {
-  try {
-    const uri = req.params.track_id.split(":");
-    if (uri[1] !== "track" || uri[0] !== "spotify")
-      return [res.status(400), res.json({ message: "bad track uri" })];
-    const API = req.app.locals.API as SpotifyWebApi;
-    const track = await API.getTrack(uri[2]);
-
-    const album = await API.getAlbum(track.body.album.id);
-    let found = appConfig.genres ? false : true;
-    if (appConfig.genres) {
-      album.body.genres.map((genre) => {
-        if (appConfig.genres && appConfig.genres.includes(genre)) {
-          found = true;
-        }
-      });
-    }
-    if (found) {
-      const result = await API.addToQueue(req.params.track_id);
-      if (result.statusCode === 204) {
-        req.session.TrackAddedToQueue = req.params.track_id;
-      }
-      return res.sendStatus(200);
-    } else {
-      return [
-        res.status(400),
-        res.json({
-          message: "track's genre not allowed",
-        }),
-      ];
-    }
-  } catch (e) {
-    console.log(e);
-    res.sendStatus(500);
-  }
-});
-
-app.get("/player/pause", async (req: Request, res: Response) => {
-  try {
-    const API = req.app.locals.API as SpotifyWebApi;
-    API.pause();
-    return res.sendStatus(200);
-  } catch {
-    res.sendStatus(500);
-  }
-});
-
-app.get("/queue/current", async (req: Request, res: Response) => {
-  try {
-    const API = req.app.locals.API as SpotifyWebApi;
-  } catch {
-    res.sendStatus(500);
-  }
-});
-
-app.get("/palyer/skip", async (req: Request, res: Response) => {
-  try {
-    const API = req.app.locals.API as SpotifyWebApi;
-    API.skipToNext();
-    return res.sendStatus(200);
-  } catch {
-    res.sendStatus(500);
-  }
-});
-
-app.get("/player/current", async (req: Request, res: Response) => {
-  try {
-    const API = req.app.locals.API as SpotifyWebApi;
-    const result = await API.getMyCurrentPlayingTrack();
-    let genres;
-    if (result.body.currently_playing_type === "track" && result.body.item) {
-      const track = await API.getTrack(result.body.item.id);
-      genres = (await API.getAlbum(track.body.album.id)).body.genres;
-    }
-    return res.json({
-      currentlyPlaying: result.body.is_playing,
-      uri: result.body.item?.uri,
-      name: result.body.item?.name,
-      genres,
-    });
-  } catch (e) {
-    console.log(e);
-    res.sendStatus(500);
-  }
-});
-
 app.get("/success", async (req: Request, res: Response) => {
   return res.sendFile(path.join(__dirname, "/rawHTML/success.html"));
 });
 
 app.listen(process.env.PORT, () => {
-  console.log(`app is running at port ${process.env.PORT} !`);
+  console.log(`\u001b[1;42m app is running at port ${process.env.PORT} !`);
 });

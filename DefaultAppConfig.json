@@ -1,3 +1,4 @@
 {
-  "platform": "spotify"
+  "platform": "spotify",
+  "minutes_between_queue_adds": 0.5
 }

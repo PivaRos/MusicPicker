@@ -53,3 +53,10 @@ export const refreshAccessToken = async (API: SpotifyWebApi) => {
     console.log("\u001b[1;31m please login /auth/login");
   }
 };
+
+export const calculate_Minutes_Time = (date1: Date, date2: Date) => {
+  // To calculate the time difference of two dates
+  var Difference_In_Time = date2.getTime() - new Date(date1).getTime();
+  var Difference_In_minutes = Difference_In_Time / (1000 * 60);
+  return Difference_In_minutes;
+};
