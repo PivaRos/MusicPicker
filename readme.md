@@ -10,11 +10,19 @@ Install dependencies
 npm install
 ```
 
-## Usage
-
 Edit DefaultAppConfig.json in order to setup your configuration
 
+Example:
+
+```json
+{
+  "platform": "spotify/youtube-music",
+  "genres": ["alternative", "samba"]
+}
+```
+
 Add .env file
+
 note: You will have to setup spotify/youtube-music application prior to adding .env file
 
 ```bash
@@ -23,6 +31,8 @@ client_secret = <client_secret>
 redirect_route = "/example/route"
 PORT = <PORT>
 ```
+
+## Usage
 
 Then start the application as developer
 
