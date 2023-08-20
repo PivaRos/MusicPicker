@@ -22,8 +22,6 @@ callbackRouter.get("/spotify", async (req: Request, res: Response) => {
       if (code) {
         const resGrant = await API.authorizationCodeGrant(code.toString());
         if (resGrant.statusCode === 200) {
-          console.log(resGrant.body);
-
           localStorage.setItem("Token", resGrant.body.access_token);
           localStorage.setItem("UpdateToken", resGrant.body.refresh_token);
           API.setAccessToken(resGrant.body.access_token);
