@@ -9,6 +9,7 @@ import callbackRouter from "./routers/callback";
 import { appConfig, image } from "./interfaces";
 import { refreshAccessToken } from "./utility";
 import PlayerRouter from "./routers/player";
+import cors from "cors";
 
 require("dotenv").config();
 
@@ -24,7 +25,7 @@ var scopes = [
 var state = "some-state-of-my-choice";
 
 const app = express();
-
+app.use(cors());
 app.use(express.json());
 
 app.use(
@@ -39,7 +40,7 @@ app.use("/auth", AuthRouter);
 app.use("/callback", callbackRouter);
 app.use("/admin", AdminRouter);
 app.use("/queue", QueueRouter);
-app.use("/player", PlayerRouter);
+app.use("/player", PlayerRouter(app));
 
 var localStorage: any = null;
 if (typeof localStorage === "undefined" || localStorage === null) {

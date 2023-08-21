@@ -16,6 +16,7 @@ export const checkWasAdded = (req: any, res: any, next: any) => {
   return [
     res.status(400),
     res.json({
+      error_type: "ALREADY_ADD",
       message: `user already added track to queue, please wait ${appConfig.minutes_between_queue_adds} minutes before trying to add new track to the queue`,
     }),
   ];

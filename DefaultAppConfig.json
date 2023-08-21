@@ -1,9 +1,5 @@
 {
   "platform": "spotify",
   "adminPassword": "123456",
-  "minutes_between_queue_adds": 1,
-  "genres": [
-    "new genres",
-    "new 111"
-  ]
+  "minutes_between_queue_adds": 1
 }

@@ -47,13 +47,16 @@ QueueRouter.get(
         return [
           res.status(400),
           res.json({
+            error_type: "GENRE_NOT_ALLOWED",
             message: "track's genre not allowed",
           }),
         ];
       }
-    } catch (e) {
-      console.log(e);
-      res.sendStatus(500);
+    } catch (e: any) {
+      res.status(e.statusCode);
+      e.headers && e.headers["retry-after"]
+        ? res.json({ retry_after: e.headers["retry-after"] })
+        : res.json(e);
     }
   }
 );

@@ -13,47 +13,65 @@ if (typeof localStorage === "undefined" || localStorage === null) {
 
 let appConfig = require("./../DefaultAppConfig.json") as appConfig;
 
-const PlayerRouter = Router();
+const router = (app: any) => {
+  const PlayerRouter = Router();
 
-PlayerRouter.get("/pause", IsAdmin, async (req: Request, res: Response) => {
-  try {
-    const API = req.app.locals.API as SpotifyWebApi;
-    API.pause();
-    return res.sendStatus(200);
-  } catch {
-    res.sendStatus(500);
-  }
-});
-
-PlayerRouter.get("/skip", IsAdmin, async (req: Request, res: Response) => {
-  try {
-    const API = req.app.locals.API as SpotifyWebApi;
-    API.skipToNext();
-    return res.sendStatus(200);
-  } catch {
-    res.sendStatus(500);
-  }
-});
-
-PlayerRouter.get("/current", async (req: Request, res: Response) => {
-  try {
-    const API = req.app.locals.API as SpotifyWebApi;
-    const result = await API.getMyCurrentPlayingTrack();
-    let genres;
-    if (result.body.currently_playing_type === "track" && result.body.item) {
-      const track = await API.getTrack(result.body.item.id);
-      genres = (await API.getAlbum(track.body.album.id)).body.genres;
+  const updateStateInterval = setInterval(async () => {
+    try {
+      const API = app.locals.API as SpotifyWebApi;
+      const result = await API.getMyCurrentPlayingTrack();
+      let theAlbum;
+      let genres;
+      if (result.body.currently_playing_type === "track" && result.body.item) {
+        if (result.body.item.type === "track") {
+          theAlbum = result.body.item.album;
+          genres = theAlbum.genres;
+        }
+      }
+      if (!result.body.item) app.locals.playerState = undefined;
+      else {
+        app.locals.playerState = {
+          currentlyPlaying: result.body.is_playing,
+          time: result.body.progress_ms,
+          maxtime: result.body.item?.duration_ms,
+          uri: result.body.item?.uri,
+          images: theAlbum ? theAlbum.images : [],
+          name: result.body.item?.name,
+          artists: theAlbum?.artists.map((artist) => {
+            return artist.name;
+          }),
+          genres,
+        };
+      }
+    } catch (e) {
+      console.log(e);
     }
-    return res.json({
-      currentlyPlaying: result.body.is_playing,
-      uri: result.body.item?.uri,
-      name: result.body.item?.name,
-      genres,
-    });
-  } catch (e) {
-    console.log(e);
-    res.sendStatus(500);
-  }
-});
+  }, 1200);
 
-export default PlayerRouter;
+  PlayerRouter.get("/pause", IsAdmin, async (req: Request, res: Response) => {
+    try {
+      const API = req.app.locals.API as SpotifyWebApi;
+      API.pause();
+      return res.sendStatus(200);
+    } catch {
+      res.sendStatus(500);
+    }
+  });
+
+  PlayerRouter.get("/skip", IsAdmin, async (req: Request, res: Response) => {
+    try {
+      const API = req.app.locals.API as SpotifyWebApi;
+      API.skipToNext();
+      return res.sendStatus(200);
+    } catch {
+      res.sendStatus(500);
+    }
+  });
+
+  PlayerRouter.get("/current", async (req: Request, res: Response) => {
+    if (req.app.locals.playerState) return res.json(req.app.locals.playerState);
+    else return [res.status(500), res.json({ device: undefined })];
+  });
+  return PlayerRouter;
+};
+export default router;
