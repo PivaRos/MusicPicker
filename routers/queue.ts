@@ -2,7 +2,6 @@ import { Request, Response, Router } from "express";
 import SpotifyWebApi from "spotify-web-api-node";
 import { checkWasAdded, hasDevice } from "../middleware";
 import { appConfig } from "./../interfaces";
-import queryString from "query-string";
 
 var localStorage: any = null;
 

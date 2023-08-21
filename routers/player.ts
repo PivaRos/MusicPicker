@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import path from "path";
 import SpotifyWebApi from "spotify-web-api-node";
-import { hasDevice } from "../middleware";
+import { IsAdmin, hasDevice } from "../middleware";
 import { appConfig } from "./../interfaces";
 
 var localStorage: any = null;
@@ -15,7 +15,7 @@ let appConfig = require("./../DefaultAppConfig.json") as appConfig;
 
 const PlayerRouter = Router();
 
-PlayerRouter.get("/pause", async (req: Request, res: Response) => {
+PlayerRouter.get("/pause", IsAdmin, async (req: Request, res: Response) => {
   try {
     const API = req.app.locals.API as SpotifyWebApi;
     API.pause();
@@ -25,7 +25,7 @@ PlayerRouter.get("/pause", async (req: Request, res: Response) => {
   }
 });
 
-PlayerRouter.get("/skip", async (req: Request, res: Response) => {
+PlayerRouter.get("/skip", IsAdmin, async (req: Request, res: Response) => {
   try {
     const API = req.app.locals.API as SpotifyWebApi;
     API.skipToNext();

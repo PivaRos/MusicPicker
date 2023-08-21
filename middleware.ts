@@ -1,5 +1,3 @@
-import { NextFunction, Request, Response } from "express";
-import { updateToken } from "./modules/spotify";
 import SpotifyWebApi from "spotify-web-api-node";
 import { appConfig } from "./interfaces";
 import { calculate_Minutes_Time } from "./utility";
@@ -39,6 +37,11 @@ export const hasDevice = async (req: any, res: any, next: any) => {
     return [res.status(500), res.json({ message: e.message })];
   }
 };
-function calculateMinutesTime() {
-  throw new Error("Function not implemented.");
-}
+
+export const IsAdmin = async (req: any, res: any, next: any) => {
+  if (req.app.locals.appConfig.adminPassword === req.session.adminPassword) {
+    next();
+  } else {
+    res.sendStatus(401);
+  }
+};

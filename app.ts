@@ -1,23 +1,12 @@
 import express, { Request, Response } from "express";
-import { Buffer } from "node:buffer";
-import {
-  addToQueue,
-  search,
-  searchResult,
-  aaass2,
-  updateToken,
-  image,
-} from "./modules/spotify";
 import SpotifyWebApi from "spotify-web-api-node";
 import path from "path";
 import session from "express-session";
 import AuthRouter from "./routers/auth";
 import AdminRouter from "./routers/admin";
 import QueueRouter from "./routers/queue";
-
 import callbackRouter from "./routers/callback";
-import { appConfig } from "./interfaces";
-import { checkWasAdded, hasDevice } from "./middleware";
+import { appConfig, image } from "./interfaces";
 import { refreshAccessToken } from "./utility";
 import PlayerRouter from "./routers/player";
 
@@ -35,6 +24,8 @@ var scopes = [
 var state = "some-state-of-my-choice";
 
 const app = express();
+
+app.use(express.json());
 
 app.use(
   session({

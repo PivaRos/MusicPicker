@@ -10,3 +10,39 @@ export type appConfig = {
   genres?: string[];
   minutes_between_queue_adds: number;
 };
+
+export enum httpMethod {
+  POST = "POST",
+  GET = "GET",
+  PUT = "PUT",
+}
+export interface searchResult {
+  tracks: {
+    herf: string;
+    items: TrackItem[];
+  };
+}
+export interface image {
+  height: number;
+  width: number;
+  url: string;
+}
+export interface artist {
+  name: string;
+  uri: string;
+}
+export interface TrackItem {
+  album: {
+    images: image[];
+  };
+  artists: artist[];
+  name: string;
+  id: string;
+  uri: string;
+}
+export interface spotifyRequest {
+  token: string;
+  endpoint: string;
+  method: httpMethod;
+  body?: object | string;
+}
