@@ -17,6 +17,8 @@ Example:
 ```json
 {
   "platform": "spotify/youtube-music",
+  "adminPassword": "<mycoolpassword>",
+  "minutes_between_queue_adds": 1,
   "genres": ["alternative", "samba"]
 }
 ```
