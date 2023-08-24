@@ -19,24 +19,29 @@ const router = (app: any) => {
   const updateStateInterval = setInterval(async () => {
     try {
       const API = app.locals.API as SpotifyWebApi;
-      const result = await API.getMyCurrentPlayingTrack();
+      const result = await API.getQueue();
+      const result2 = await API.getMyCurrentPlaybackState();
       let theAlbum;
       let genres;
-      if (result.body.currently_playing_type === "track" && result.body.item) {
-        if (result.body.item.type === "track") {
-          theAlbum = result.body.item.album;
+      if (
+        result.body.currently_playing.type &&
+        result.body.currently_playing.type === "track"
+      ) {
+        if (result.body.currently_playing.type === "track") {
+          theAlbum = result.body.currently_playing.album;
           genres = theAlbum.genres;
         }
       }
-      if (!result.body.item) app.locals.playerState = undefined;
+      if (!result.body.currently_playing) app.locals.playerState = undefined;
       else {
         app.locals.playerState = {
-          currentlyPlaying: result.body.is_playing,
-          time: result.body.progress_ms,
-          maxtime: result.body.item?.duration_ms,
-          uri: result.body.item?.uri,
+          queue: result.body.queue,
+          currentlyPlaying: result2.body.is_playing,
+          time: result2.body.progress_ms,
+          maxtime: result.body.currently_playing.duration_ms,
+          uri: result.body.currently_playing.uri,
           images: theAlbum ? theAlbum.images : [],
-          name: result.body.item?.name,
+          name: result.body.currently_playing.name,
           artists: theAlbum?.artists.map((artist) => {
             return artist.name;
           }),
@@ -46,7 +51,7 @@ const router = (app: any) => {
     } catch (e) {
       console.log(e);
     }
-  }, 1200);
+  }, 1550);
 
   PlayerRouter.get("/pause", IsAdmin, async (req: Request, res: Response) => {
     try {

@@ -1,6 +1,8 @@
 import SpotifyWebApi from "spotify-web-api-node";
 import { appConfig } from "./interfaces";
 import { calculate_Minutes_Time } from "./utility";
+import { Request, Response } from "node-fetch";
+import { NextFunction } from "express";
 
 export const checkWasAdded = (req: any, res: any, next: any) => {
   const appConfig = req.app.locals.appConfig as appConfig;
@@ -20,6 +22,24 @@ export const checkWasAdded = (req: any, res: any, next: any) => {
       message: `user already added track to queue, please wait ${appConfig.minutes_between_queue_adds} minutes before trying to add new track to the queue`,
     }),
   ];
+};
+
+export const IsNotInQueue = (req: any, res: any, next: NextFunction) => {
+  let found = false;
+  const queue = req.app.locals.playerState
+    .queue as SpotifyApi.TrackObjectFull[];
+  for (let i = 0; i < queue.length; i++) {
+    if (queue[i].uri === req.params.track_uri) {
+      return [
+        res.status(503),
+        res.json({
+          message: "track exists in current queue",
+          error_type: "EXISTS",
+        }),
+      ];
+    }
+  }
+  next();
 };
 
 export const hasDevice = async (req: any, res: any, next: any) => {

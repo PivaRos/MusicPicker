@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import SpotifyWebApi from "spotify-web-api-node";
-import { checkWasAdded, hasDevice } from "../middleware";
+import { IsNotInQueue, checkWasAdded, hasDevice } from "../middleware";
 import { appConfig } from "./../interfaces";
 
 var localStorage: any = null;
@@ -13,13 +13,16 @@ if (typeof localStorage === "undefined" || localStorage === null) {
 const QueueRouter = Router();
 
 QueueRouter.get(
-  "/add/:track_id",
+  "/add/:track_uri",
   hasDevice,
+  IsNotInQueue,
   checkWasAdded,
+
   async (req: any, res: any) => {
     let appConfig = req.app.locals.appConfig as appConfig;
+    res.locals.trackUri = req.params.track_uri;
     try {
-      const uri = req.params.track_id.split(":");
+      const uri = req.params.track_uri.split(":");
       if (uri[1] !== "track" || uri[0] !== "spotify")
         return [res.status(400), res.json({ message: "bad track uri" })];
       const API = req.app.locals.API as SpotifyWebApi;
@@ -35,10 +38,10 @@ QueueRouter.get(
         });
       }
       if (found) {
-        const result = await API.addToQueue(req.params.track_id);
+        const result = await API.addToQueue(req.params.track_uri);
         if (result.statusCode === 204) {
           const date = new Date();
-          req.session.track_id = req.params.track_id;
+          req.session.track_uri = req.params.track_uri;
           req.session.track_date = date;
           return res.sendStatus(200);
         }
