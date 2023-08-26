@@ -18,7 +18,7 @@ export var generateRandomString = function (length: number) {
   return text;
 };
 
-export const refreshAccessToken = async (API: SpotifyWebApi) => {
+export const refreshAccessToken = async (API: SpotifyWebApi, app: any) => {
   let myInterval;
   try {
     const Token = localStorage.getItem("Token");
@@ -36,6 +36,7 @@ export const refreshAccessToken = async (API: SpotifyWebApi) => {
       "padding: 10px",
     ].join(";");
     console.log("\u001b[1;44m Refreshing Access Token...");
+    app.locals.refreshingAccessToken = true;
     const token = await API.refreshAccessToken();
     API.setAccessToken(token.body.access_token);
     if (token.body.refresh_token) {
@@ -44,8 +45,9 @@ export const refreshAccessToken = async (API: SpotifyWebApi) => {
     }
     localStorage.setItem("Token", token.body.access_token);
     console.log("\u001b[1;44m Finished Refreshing Token !");
+    app.locals.refreshingAccessToken = false;
     myInterval = setInterval(async () => {
-      refreshAccessToken(API);
+      refreshAccessToken(API, app);
     }, 3599900);
   } catch (e: any) {
     clearInterval(myInterval);

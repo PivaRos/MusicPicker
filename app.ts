@@ -62,7 +62,7 @@ const API = new SpotifyWebApi({
 });
 app.locals.API = API;
 
-refreshAccessToken(API);
+refreshAccessToken(API, app);
 app.locals.loginUri = API.createAuthorizeURL(scopes, state, true);
 
 app.get("/search/:query", async (req: Request, res: Response) => {
@@ -82,7 +82,6 @@ app.get("/search/:query", async (req: Request, res: Response) => {
             return artist.name;
           }),
           images: track.album.images as image[],
-          genres: track.genres,
         };
       })
     );

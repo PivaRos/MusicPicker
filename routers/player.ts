@@ -18,33 +18,34 @@ const router = (app: any) => {
 
   const updateStateInterval = setInterval(async () => {
     try {
-      const API = app.locals.API as SpotifyWebApi;
-      const result = await API.getQueue();
-      const result2 = await API.getMyCurrentPlaybackState();
-      let theAlbum;
-      let genres;
-      if (
-        result.body.currently_playing &&
-        result.body.currently_playing.type === "track"
-      ) {
-        theAlbum = result.body.currently_playing.album;
-        genres = result.body.currently_playing.genres;
-      }
-      if (!result.body.currently_playing) app.locals.playerState = undefined;
-      else {
-        app.locals.playerState = {
-          queue: result.body.queue,
-          currentlyPlaying: result2.body.is_playing,
-          time: result2.body.progress_ms,
-          maxtime: result.body.currently_playing.duration_ms,
-          uri: result.body.currently_playing.uri,
-          images: theAlbum ? theAlbum.images : [],
-          name: result.body.currently_playing.name,
-          artists: theAlbum?.artists.map((artist) => {
-            return artist.name;
-          }),
-          genres,
-        };
+      if (!app.locals.refreshingAccessToken) {
+        const API = app.locals.API as SpotifyWebApi;
+        const result = await API.getQueue();
+        const result2 = await API.getMyCurrentPlaybackState();
+        let theAlbum;
+        let genres;
+        if (
+          result.body.currently_playing &&
+          result.body.currently_playing.type === "track"
+        ) {
+          theAlbum = result.body.currently_playing.album;
+        }
+        if (!result.body.currently_playing) app.locals.playerState = undefined;
+        else {
+          app.locals.playerState = {
+            queue: result.body.queue,
+            currentlyPlaying: result2.body.is_playing,
+            time: result2.body.progress_ms,
+            maxtime: result.body.currently_playing.duration_ms,
+            uri: result.body.currently_playing.uri,
+            images: theAlbum ? theAlbum.images : [],
+            name: result.body.currently_playing.name,
+            artists: theAlbum?.artists.map((artist) => {
+              return artist.name;
+            }),
+            genres,
+          };
+        }
       }
     } catch (e) {
       console.log(e);
