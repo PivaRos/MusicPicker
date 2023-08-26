@@ -82,7 +82,7 @@ app.get("/search/:query", async (req: Request, res: Response) => {
             return artist.name;
           }),
           images: track.album.images as image[],
-          genres: track.album.genres,
+          genres: track.genres,
         };
       })
     );

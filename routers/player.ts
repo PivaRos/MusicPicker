@@ -29,7 +29,7 @@ const router = (app: any) => {
       ) {
         if (result.body.currently_playing.type === "track") {
           theAlbum = result.body.currently_playing.album;
-          genres = theAlbum.genres;
+          genres = result.body.currently_playing.genres;
         }
       }
       if (!result.body.currently_playing) app.locals.playerState = undefined;
