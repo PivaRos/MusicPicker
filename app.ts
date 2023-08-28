@@ -51,14 +51,16 @@ if (typeof localStorage === "undefined" || localStorage === null) {
 let appConfig = require("./DefaultAppConfig.json") as appConfig;
 app.locals.appConfig = appConfig;
 
-const redirect_route = process.env.redirect_route;
-const client_id = process.env.client_id;
-const client_secret = process.env.client_secret;
+const redirect_route = process.env.redirect_route || "";
+const client_id = process.env.client_id || "";
+const client_secret = process.env.client_secret || "";
+
+const HOST = process.env.HOST || "";
 
 const API = new SpotifyWebApi({
   clientId: client_id,
   clientSecret: client_secret,
-  redirectUri: "http://localhost:" + process.env.PORT + redirect_route,
+  redirectUri: HOST + redirect_route || "",
 });
 app.locals.API = API;
 
