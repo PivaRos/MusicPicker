@@ -6,10 +6,11 @@ import AuthRouter from "./routers/auth";
 import AdminRouter from "./routers/admin";
 import QueueRouter from "./routers/queue";
 import callbackRouter from "./routers/callback";
-import { appConfig, image } from "./interfaces";
-import { refreshAccessToken } from "./utility";
+import { appConfig, image, lisence } from "./interfaces";
+import { authorizeToRun, refreshAccessToken } from "./utility";
 import PlayerRouter from "./routers/player";
 import cors from "cors";
+import address from "address";
 
 require("dotenv").config();
 
@@ -36,12 +37,6 @@ app.use(
   })
 );
 
-app.use("/auth", AuthRouter);
-app.use("/callback", callbackRouter);
-app.use("/admin", AdminRouter);
-app.use("/queue", QueueRouter);
-app.use("/player", PlayerRouter(app));
-
 var localStorage: any = null;
 if (typeof localStorage === "undefined" || localStorage === null) {
   var LocalStorage = require("node-localstorage").LocalStorage;
@@ -64,8 +59,31 @@ const API = new SpotifyWebApi({
 });
 app.locals.API = API;
 
+address.mac((err, addr) => {
+  console.log(addr);
+  app.locals.lisence = {
+    mac: addr,
+    authorized: false,
+  } as lisence;
+});
+
+authorizeToRun(app);
+
 refreshAccessToken(API, app);
 app.locals.loginUri = API.createAuthorizeURL(scopes, state, true);
+
+app.use(async (req, res, next) => {
+  if (app.locals.lisence.authorized) {
+    next();
+  } else {
+    return [res.status(401), res.json({ message: "no license found" })];
+  }
+});
+app.use("/auth", AuthRouter);
+app.use("/callback", callbackRouter);
+app.use("/admin", AdminRouter);
+app.use("/queue", QueueRouter);
+app.use("/player", PlayerRouter(app));
 
 app.get("/search/:query", async (req: Request, res: Response) => {
   try {

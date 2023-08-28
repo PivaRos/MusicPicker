@@ -46,3 +46,8 @@ export interface spotifyRequest {
   method: httpMethod;
   body?: object | string;
 }
+
+export interface lisence {
+  mac: string;
+  authorized: boolean;
+}

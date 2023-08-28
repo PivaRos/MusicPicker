@@ -1,4 +1,9 @@
 import SpotifyWebApi from "spotify-web-api-node";
+import { lisence } from "./interfaces";
+import axios from "axios";
+require("dotenv").config();
+
+const dev = process.env.dev;
 
 var localStorage: any = null;
 
@@ -18,41 +23,72 @@ export var generateRandomString = function (length: number) {
   return text;
 };
 
+const refereshToken = async (API: SpotifyWebApi, app: any) => {
+  const Token = localStorage.getItem("Token");
+  const UpdateToken = localStorage.getItem("UpdateToken");
+  if (Token && UpdateToken) {
+    API.setAccessToken(Token);
+    API.setRefreshToken(UpdateToken);
+  }
+  console.log("\u001b[1;44m Refreshing Access Token...");
+  app.locals.refreshingAccessToken = true;
+  const token = await API.refreshAccessToken();
+  API.setAccessToken(token.body.access_token);
+  if (token.body.refresh_token) {
+    API.setRefreshToken(token.body.refresh_token);
+    localStorage.setItem("UpdateToken", token.body.refresh_token);
+  }
+  localStorage.setItem("Token", token.body.access_token);
+  console.log("\u001b[1;44m Finished Refreshing Token !");
+  app.locals.refreshingAccessToken = false;
+};
+
 export const refreshAccessToken = async (API: SpotifyWebApi, app: any) => {
   let myInterval;
   try {
-    const Token = localStorage.getItem("Token");
-    const UpdateToken = localStorage.getItem("UpdateToken");
-    if (Token && UpdateToken) {
-      API.setAccessToken(Token);
-      API.setRefreshToken(UpdateToken);
-    }
-    const styles = [
-      "color: green",
-      "background: yellow",
-      "font-size: 30px",
-      "border: 1px solid red",
-      "text-shadow: 2px 2px black",
-      "padding: 10px",
-    ].join(";");
-    console.log("\u001b[1;44m Refreshing Access Token...");
-    app.locals.refreshingAccessToken = true;
-    const token = await API.refreshAccessToken();
-    API.setAccessToken(token.body.access_token);
-    if (token.body.refresh_token) {
-      API.setRefreshToken(token.body.refresh_token);
-      localStorage.setItem("UpdateToken", token.body.refresh_token);
-    }
-    localStorage.setItem("Token", token.body.access_token);
-    console.log("\u001b[1;44m Finished Refreshing Token !");
-    app.locals.refreshingAccessToken = false;
+    refereshToken(API, app);
     myInterval = setInterval(async () => {
-      refreshAccessToken(API, app);
+      refereshToken(API, app);
     }, 3599900);
   } catch (e: any) {
     clearInterval(myInterval);
     console.log(e.message);
     console.log("\u001b[1;31m please login /auth/login");
+  }
+};
+
+const authorize = async (app: any) => {
+  console.log(`\u001b[1;42m Checking lisence...`);
+  const lisence = { ...app.locals.lisence } as lisence;
+  const HardCodedHOST = !dev
+    ? "https://danielgurbin.com"
+    : "http://localhost:8000";
+  const result = await axios.get(
+    HardCodedHOST + "/api/auth/state/" + lisence.mac,
+    {
+      validateStatus: () => true,
+    }
+  );
+  if (result.status === 200) {
+    lisence.authorized = true; // set authorized true
+    app.locals.lisence = lisence;
+    console.log(`\u001b[1;42m Lisenced successfully`);
+  } else {
+    lisence.authorized = false; // set authorized false
+    app.locals.lisence = lisence;
+    console.log("\u001b[1;31m No License Found");
+  }
+};
+
+export const authorizeToRun = async (app: any) => {
+  let myInterval;
+  try {
+    authorize(app);
+    myInterval = setInterval(async () => {
+      authorize(app);
+    }, 3599900);
+  } catch (e: any) {
+    clearInterval(myInterval);
   }
 };
 
