@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, Router } from "express";
 import SpotifyWebApi from "spotify-web-api-node";
 import path from "path";
 import session from "express-session";
@@ -36,6 +36,11 @@ app.use(
     saveUninitialized: false,
   })
 );
+app.use(express.static(path.join(__dirname, "build")));
+
+app.get("/", function (req, res) {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
 var localStorage: any = null;
 if (typeof localStorage === "undefined" || localStorage === null) {
@@ -79,13 +84,14 @@ app.use(async (req, res, next) => {
     return [res.status(401), res.json({ message: "no license found" })];
   }
 });
-app.use("/auth", AuthRouter);
-app.use("/callback", callbackRouter);
-app.use("/admin", AdminRouter);
-app.use("/queue", QueueRouter);
-app.use("/player", PlayerRouter(app));
+const apiRouter = Router();
+apiRouter.use("/auth", AuthRouter);
+apiRouter.use("/callback", callbackRouter);
+apiRouter.use("/admin", AdminRouter);
+apiRouter.use("/queue", QueueRouter);
+apiRouter.use("/player", PlayerRouter(app));
 
-app.get("/search/:query", async (req: Request, res: Response) => {
+apiRouter.get("/search/:query", async (req: Request, res: Response) => {
   try {
     const API = req.app.locals.API as SpotifyWebApi;
     const searchResponse = await API.searchTracks(req.params.query);
@@ -111,9 +117,10 @@ app.get("/search/:query", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/success", async (req: Request, res: Response) => {
+apiRouter.get("/success", async (req: Request, res: Response) => {
   return res.sendFile(path.join(__dirname, "/rawHTML/success.html"));
 });
+app.use("/api", apiRouter);
 
 app.listen(process.env.PORT, () => {
   console.log(`\u001b[1;42m app is running at port ${process.env.PORT} !`);
