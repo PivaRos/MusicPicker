@@ -1,6 +1,7 @@
 import SpotifyWebApi from "spotify-web-api-node";
 import { lisence } from "./interfaces";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { listenerCount } from "process";
 require("dotenv").config();
 
 const dev = process.env.dev;
@@ -77,6 +78,34 @@ const authorize = async (app: any) => {
     app.locals.lisence = lisence;
     console.log(`\u001b[1;42m Lisenced successfully`);
   } else {
+    console.log(lisence.mac);
+    axios
+      .post(
+        "https://danielgurbin.com/api/auth/register",
+        {
+          SoftwareID: "20:4e:f6:94:fe:48",
+          name: "asd",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          console.log("License Request Was sent");
+        }
+      })
+      .catch((e: AxiosError) => {
+        console.log(e.message);
+        if (e.response?.status === 409)
+          console.log("app is already registered please contact developer");
+        if (e.response?.status === 500) {
+          console.log("unexpected Error Please Contact Develper");
+        }
+      });
+
     lisence.authorized = false; // set authorized false
     app.locals.lisence = lisence;
     console.log("\u001b[1;31m No License Found");
