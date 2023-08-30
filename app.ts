@@ -55,7 +55,7 @@ const redirect_route = process.env.redirect_route || "";
 const client_id = process.env.client_id || "";
 const client_secret = process.env.client_secret || "";
 
-const HOST = process.env.HOST || "";
+const HOST = process.env.HOST || "http://localhost:" + process.env.PORT + "/";
 
 const API = new SpotifyWebApi({
   clientId: client_id,
