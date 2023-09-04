@@ -37,14 +37,6 @@ app.use(
   })
 );
 
-const musicpicker = Router();
-musicpicker.use(express.static(path.join(__dirname, "build")));
-
-musicpicker.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
-app.use("/musicpicker", musicpicker);
-
 var localStorage: any = null;
 if (typeof localStorage === "undefined" || localStorage === null) {
   var LocalStorage = require("node-localstorage").LocalStorage;
@@ -120,10 +112,17 @@ apiRouter.get("/search/:query", async (req: Request, res: Response) => {
   }
 });
 
-apiRouter.get("/success", async (req: Request, res: Response) => {
+const musicpicker = Router();
+musicpicker.use(express.static(path.join(__dirname, "build")));
+
+musicpicker.get("/", function (req, res) {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
+musicpicker.get("/success", async (req: Request, res: Response) => {
   return res.sendFile(path.join(__dirname, "/rawHTML/success.html"));
 });
-app.use("/api", apiRouter);
+musicpicker.use("/api", apiRouter);
+app.use("/musicpicker", musicpicker);
 
 app.listen(process.env.PORT, () => {
   console.log(`\u001b[1;42m app is running at port ${process.env.PORT} !`);
