@@ -27,7 +27,7 @@ callbackRouter.get("/spotify", async (req: Request, res: Response) => {
           API.setAccessToken(resGrant.body.access_token);
           API.setRefreshToken(resGrant.body.refresh_token);
           console.log("\u001b[1;32m logged in successfully !");
-          return res.redirect("/api/success");
+          return res.redirect("/musicpicker/success");
         } else {
           return res.sendStatus(401);
         }
@@ -35,6 +35,7 @@ callbackRouter.get("/spotify", async (req: Request, res: Response) => {
     }
     return res.sendStatus(500);
   } catch (e) {
+    console.log(e);
     console.log(e);
     return res.sendStatus(401);
   }

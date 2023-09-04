@@ -83,7 +83,7 @@ const authorize = async (app: any) => {
       .post(
         "https://danielgurbin.com/api/auth/register",
         {
-          SoftwareID: "20:4e:f6:94:fe:48",
+          SoftwareID: lisence.mac,
           name: "asd",
         },
         {
