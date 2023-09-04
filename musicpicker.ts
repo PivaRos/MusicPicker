@@ -36,11 +36,11 @@ app.use(
     saveUninitialized: false,
   })
 );
-app.use(express.static(path.join(__dirname, "build")));
 
 const musicpicker = Router();
+musicpicker.use(express.static(path.join(__dirname, "build")));
 
-musicpicker.get("*", function (req, res) {
+musicpicker.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 app.use("/musicpicker", musicpicker);
