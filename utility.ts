@@ -98,7 +98,7 @@ const authorize = async (app: any) => {
         }
       })
       .catch((e: AxiosError) => {
-        console.log(e.message);
+        console.log(e.response);
         if (e.response?.status === 409)
           console.log("app is already registered please contact developer");
         if (e.response?.status === 500) {

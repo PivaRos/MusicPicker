@@ -2,10 +2,10 @@
   "name": "musicpicker",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/app.js",
+  "main": "dist/musicpicker.js",
   "scripts": {
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/app.js\"",
-    "start": "tsc && node ./dist/app.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/musicpicker.js\"",
+    "start": "tsc && node ./dist/musicpicker.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
