@@ -38,9 +38,12 @@ app.use(
 );
 app.use(express.static(path.join(__dirname, "build")));
 
-app.get("/", function (req, res) {
+const musicpicker = Router();
+
+musicpicker.get("*", function (req, res) {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
+app.use("/musicpicker", musicpicker);
 
 var localStorage: any = null;
 if (typeof localStorage === "undefined" || localStorage === null) {
