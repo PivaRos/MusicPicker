@@ -14,11 +14,7 @@ export class VoteModule {
   constructor(API: SpotifyWebApi, { getActiveVoters }: options) {
     this.API = API;
     this.getActiveVoters = getActiveVoters;
-    this.API.getMyDevices()
-      .then((result) => {
-        this.volume = result.body.devices[0].volume_percent;
-      })
-      .catch();
+    this.checkVolume();
 
     const Interval = setInterval(() => {
       this.checkVotes();
@@ -36,14 +32,20 @@ export class VoteModule {
     return true;
   };
 
+  checkVolume = async () => {
+    try {
+      if (!this.volume) {
+        this.API.getMyDevices()
+          .then((result) => {
+            this.volume = result.body.devices[0].volume_percent;
+          })
+          .catch(() => {});
+      }
+    } catch {}
+  };
+
   checkVotes = async () => {
-    if (!this.volume) {
-      this.API.getMyDevices()
-        .then((result) => {
-          this.volume = result.body.devices[0].volume_percent;
-        })
-        .catch();
-    }
+    await this.checkVolume();
     for (let i = 0; i < this.votes.length; i++) {
       if (this.votes[i].getVotes() > this.getActiveVoters() / 2) {
         //execute vote and delete

@@ -89,12 +89,12 @@ app.use(async (req, res, next) => {
   }
 });
 const apiRouter = Router();
-apiRouter.use("/vote", RouterFunction(API, ActiveUsers));
 apiRouter.use("/auth", AuthRouter);
 apiRouter.use("/callback", callbackRouter);
 apiRouter.use("/admin", AdminRouter);
 apiRouter.use("/queue", QueueRouter);
 apiRouter.use("/player", PlayerRouter(app));
+apiRouter.use("/vote", RouterFunction(app, ActiveUsers));
 
 apiRouter.get("/search/:query", async (req: Request, res: Response) => {
   try {

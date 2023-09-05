@@ -10,11 +10,11 @@ if (typeof localStorage === "undefined" || localStorage === null) {
   localStorage = new LocalStorage("./scratch");
 }
 
-const RouterFunction = (API: SpotifyWebApi, ActiveUsers: activeUsers) => {
+const RouterFunction = (app: any, ActiveUsers: activeUsers) => {
   const votesRouter = Router();
 
   const options = { getActiveVoters: ActiveUsers.getAmountOfUsers };
-  const voteModule = new VoteModule(API, options);
+  const voteModule = new VoteModule(app.locals.API, options);
 
   votesRouter.get("/skip", async (req: Request, res: Response) => {
     try {
