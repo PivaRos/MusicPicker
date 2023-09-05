@@ -65,14 +65,11 @@ export const refreshAccessToken = async (API: SpotifyWebApi, app: any) => {
 const authorize = async (app: any) => {
   console.log(`\u001b[1;42m Checking lisence...`);
   const lisence = { ...app.locals.lisence } as lisence;
-  const HardCodedHOST = "https://danielgurbin.com";
+  const HardCodedHOST = "https://api.danielgurbin.com";
 
-  const result = await axios.get(
-    HardCodedHOST + "/api/auth/state/" + lisence.mac,
-    {
-      validateStatus: () => true,
-    }
-  );
+  const result = await axios.get(HardCodedHOST + "/auth/state/" + lisence.mac, {
+    validateStatus: () => true,
+  });
   if (result.status === 200) {
     lisence.authorized = true; // set authorized true
     app.locals.lisence = lisence;
