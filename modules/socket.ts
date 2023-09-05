@@ -13,7 +13,6 @@ export const SocketServer = (
 ) => {
   const server = new WebSocketServer({
     port: process.env.WebSocketPORT ? +process.env.WebSocketPORT : 3000,
-    host: process.env.WebSocketHOST ? process.env.WebSocketHOST : "0.0.0.0",
     verifyClient: async (info, callback) => {
       callback(true, 200);
     },
