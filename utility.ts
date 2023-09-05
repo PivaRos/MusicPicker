@@ -81,10 +81,10 @@ const authorize = async (app: any) => {
     console.log(lisence.mac);
     axios
       .post(
-        "https://danielgurbin.com/api/auth/register",
+        HardCodedHOST + "license/auth/register",
         {
           SoftwareID: lisence.mac,
-          name: "asd",
+          name: process.env.appname,
         },
         {
           headers: {
