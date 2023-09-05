@@ -5,12 +5,15 @@ import session from "express-session";
 import AuthRouter from "./routers/auth";
 import AdminRouter from "./routers/admin";
 import QueueRouter from "./routers/queue";
+import RouterFunction from "./routers/vote";
 import callbackRouter from "./routers/callback";
 import { appConfig, image, lisence } from "./interfaces";
 import { authorizeToRun, refreshAccessToken } from "./utility";
 import PlayerRouter from "./routers/player";
 import cors from "cors";
 import address from "address";
+import { SocketServer } from "./modules/socket";
+import { activeUsers } from "./modules/activeUser";
 
 require("dotenv").config();
 
@@ -72,6 +75,12 @@ authorizeToRun(app);
 refreshAccessToken(API, app);
 app.locals.loginUri = API.createAuthorizeURL(scopes, state, true);
 
+const ActiveUsers = new activeUsers();
+
+const socketServer = SocketServer(API, {
+  addUser: ActiveUsers.addUser,
+  removeUser: ActiveUsers.removeUser,
+});
 app.use(async (req, res, next) => {
   if (app.locals.lisence.authorized) {
     next();
@@ -80,6 +89,7 @@ app.use(async (req, res, next) => {
   }
 });
 const apiRouter = Router();
+apiRouter.use("/vote", RouterFunction(API, ActiveUsers));
 apiRouter.use("/auth", AuthRouter);
 apiRouter.use("/callback", callbackRouter);
 apiRouter.use("/admin", AdminRouter);
