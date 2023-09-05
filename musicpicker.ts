@@ -122,17 +122,15 @@ apiRouter.get("/search/:query", async (req: Request, res: Response) => {
   }
 });
 
-const musicpicker = Router();
-musicpicker.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, "build")));
 
-musicpicker.get("/", function (req, res) {
+app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
-musicpicker.get("/success", async (req: Request, res: Response) => {
+app.get("/success", async (req: Request, res: Response) => {
   return res.sendFile(path.join(__dirname, "/rawHTML/success.html"));
 });
-musicpicker.use("/api", apiRouter);
-app.use("/", musicpicker);
+app.use("/api", apiRouter);
 
 app.listen(process.env.PORT, () => {
   console.log(`\u001b[1;42m app is running at port ${process.env.PORT} !`);
