@@ -5,11 +5,12 @@ import { User } from "./User";
 interface countInterface {
   addUser: (User: User) => boolean;
   removeUser: (User: User) => boolean;
+  removeVotes: (userid: string) => void;
 }
 
 export const SocketServer = (
   API: SpotifyWebApi,
-  { addUser, removeUser }: countInterface
+  { addUser, removeUser, removeVotes }: countInterface
 ) => {
   const server = new WebSocketServer({
     port: process.env.WebSocketPORT ? +process.env.WebSocketPORT : 3000,
@@ -34,6 +35,7 @@ export const SocketServer = (
     socket.on("message", async (message) => {});
     socket.on("close", async () => {
       removeUser(user);
+      removeVotes(user.getId());
     });
   });
 };

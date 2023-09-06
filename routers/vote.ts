@@ -18,8 +18,7 @@ const RouterFunction = (app: any, ActiveUsers: activeUsers) => {
 
   votesRouter.use(checkIfUserExists);
 
-  const options = { getActiveVoters: ActiveUsers.getAmountOfUsers };
-  const voteModule = new VoteModule(app.locals.API, options);
+  const voteModule = app.locals.voteModule as VoteModule;
 
   votesRouter.get("/", (req: Request, res: Response) => {
     try {

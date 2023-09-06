@@ -18,7 +18,7 @@ export class VoteModule {
 
     const Interval = setInterval(() => {
       this.checkVotes();
-    }, 1500);
+    }, 2000);
   }
 
   // return's false if vote this the same type is already in the votes array else return's true
@@ -48,6 +48,16 @@ export class VoteModule {
   };
 
   getVotes = () => this.votes;
+
+  removeVotes = (userid: string) => {
+    for (let c = 0; c < this.votes.length; c++) {
+      for (let i = 0; i < this.votes[c].getVotes().length; i++) {
+        if (this.votes[c].getVotes()[i] === userid) {
+          this.votes[c].getVotes().splice(i, 1);
+        }
+      }
+    }
+  };
 
   private checkVotes = async () => {
     await this.checkVolume();

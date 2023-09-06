@@ -14,6 +14,7 @@ import cors from "cors";
 import address from "address";
 import { SocketServer } from "./modules/socket";
 import { activeUsers } from "./modules/activeUser";
+import { VoteModule } from "./modules/VoteModule";
 
 require("dotenv").config();
 
@@ -78,10 +79,14 @@ app.locals.loginUri = API.createAuthorizeURL(scopes, state, true);
 const ActiveUsers = new activeUsers();
 
 app.locals.ActiveUsers = ActiveUsers as activeUsers;
+const options = { getActiveVoters: ActiveUsers.getAmountOfUsers };
+const voteModule = new VoteModule(app.locals.API, options);
+app.locals.voteModule = voteModule;
 
 const socketServer = SocketServer(API, {
   addUser: ActiveUsers.addUser,
   removeUser: ActiveUsers.removeUser,
+  removeVotes: voteModule.removeVotes,
 });
 app.use(async (req, res, next) => {
   if (app.locals.lisence.authorized) {
