@@ -22,17 +22,20 @@ export class VoteModule {
   }
 
   // return's false if vote this the same type is already in the votes array else return's true
-  addVote = (vote: Vote) => {
+  addVote = (vote: Vote, id: string) => {
     for (let i = 0; i < this.votes.length; i++) {
       if (this.votes[i].getType() === vote.getType()) {
-        return false;
+        //check If User Voted;
+        return this.votes[i].addVote(id);
       }
     }
+    //add new vote
+    vote.addVote(id);
     this.votes.push(vote);
     return true;
   };
 
-  checkVolume = async () => {
+  private checkVolume = async () => {
     try {
       if (!this.volume) {
         this.API.getMyDevices()
@@ -44,26 +47,33 @@ export class VoteModule {
     } catch {}
   };
 
-  checkVotes = async () => {
+  getVotes = () => this.votes;
+
+  private checkVotes = async () => {
     await this.checkVolume();
     for (let i = 0; i < this.votes.length; i++) {
-      if (this.votes[i].getVotes() > this.getActiveVoters() / 2) {
+      if (this.votes[i].getVotes().length > this.getActiveVoters() / 2) {
         //execute vote and delete
         switch (this.votes[i].getType()) {
           case votes.Skip:
             //do Skip
             this.API.skipToNext();
-            this.votes[i].resetVotes();
+            this.votes.splice(i, 1); // remove vote from list
             break;
           case votes.VolumeUp:
             if (this.volume) {
-              this.API.setVolume(this.volume + 15);
               this.volume += 15;
+              if (this.volume > 100) this.volume = 100;
+              this.API.setVolume(this.volume);
+              this.votes.splice(i, 1); // remove vote from list
             }
+            break;
           case votes.VolumeDown:
             if (this.volume) {
-              this.API.setVolume(this.volume - 15);
               this.volume -= 15;
+              if (this.volume < 0) this.volume = 1;
+              this.API.setVolume(this.volume);
+              this.votes.splice(i, 1); // remove vote from list
             }
             break;
         }

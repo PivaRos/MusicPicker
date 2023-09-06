@@ -8,7 +8,7 @@ export enum votes {
 
 export class Vote {
   private type: string;
-  private votes: number = 0;
+  private votes: string[] = [];
 
   constructor(type: votes) {
     this.type = type;
@@ -18,22 +18,30 @@ export class Vote {
     return this.type;
   };
 
-  getVotes: () => number = () => {
+  getVotes: () => string[] = () => {
     return this.votes;
   };
 
-  addVote: () => void = () => {
-    this.votes++;
+  addVote = (id: string) => {
+    for (let i = 0; i < this.votes.length; i++) {
+      if (this.votes[i] === id) {
+        return false;
+      }
+    }
+    this.votes.push(id);
+    return true;
   };
 
-  removeVote: () => void = () => {
-    this.votes--;
+  removeVote = (id: string) => {
+    for (let i = 0; i < this.votes.length; i++) {
+      if (this.votes[i] === id) {
+        this.votes.splice(i, 1);
+        return true;
+      }
+    }
+    return false;
   };
 
   getAddVote = () => this.addVote;
   getRemoveVote = () => this.removeVote;
-
-  resetVotes = () => {
-    this.votes = 0;
-  };
 }

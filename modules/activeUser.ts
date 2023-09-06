@@ -29,4 +29,11 @@ export class activeUsers {
     }
     return false;
   };
+
+  exist = (userid: string) => {
+    for (let c = 0; c < this.Users.length; c++) {
+      if (this.Users[c].getId() === userid) return true;
+    }
+    return false;
+  };
 }

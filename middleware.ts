@@ -3,6 +3,7 @@ import { appConfig } from "./interfaces";
 import { calculate_Minutes_Time } from "./utility";
 import { Request, Response } from "node-fetch";
 import { NextFunction } from "express";
+import { activeUsers } from "./modules/activeUser";
 
 export const checkWasAdded = (req: any, res: any, next: any) => {
   const appConfig = req.app.locals.appConfig as appConfig;
@@ -28,6 +29,12 @@ export const checkWasAdded = (req: any, res: any, next: any) => {
       message: `user already added track to queue, please wait ${appConfig.minutes_between_queue_adds} minutes before trying to add new track to the queue`,
     }),
   ];
+};
+
+export const checkIfUserExists = (req: any, res: any, next: any) => {
+  const ActiveUsers = req.app.locals.ActiveUsers as activeUsers;
+  if (ActiveUsers.exist(req.headers.authorization)) return next();
+  else return [res.status(401), res.json({ message: "no user found" })];
 };
 
 export const IsNotInQueue = (req: any, res: any, next: NextFunction) => {

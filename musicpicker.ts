@@ -77,6 +77,8 @@ app.locals.loginUri = API.createAuthorizeURL(scopes, state, true);
 
 const ActiveUsers = new activeUsers();
 
+app.locals.ActiveUsers = ActiveUsers as activeUsers;
+
 const socketServer = SocketServer(API, {
   addUser: ActiveUsers.addUser,
   removeUser: ActiveUsers.removeUser,
@@ -122,15 +124,18 @@ apiRouter.get("/search/:query", async (req: Request, res: Response) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, "build")));
+const musicpicker = Router();
+musicpicker.use(express.static(path.join(__dirname, "build")));
 
-app.get("/", function (req, res) {
+musicpicker.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
-app.get("/success", async (req: Request, res: Response) => {
+musicpicker.get("/success", async (req: Request, res: Response) => {
   return res.sendFile(path.join(__dirname, "/rawHTML/success.html"));
 });
-app.use("/api", apiRouter);
+musicpicker.use("/api", apiRouter);
+
+app.use("/musicpicker", musicpicker);
 
 app.listen(process.env.PORT, () => {
   console.log(`\u001b[1;42m app is running at port ${process.env.PORT} !`);
