@@ -24,7 +24,9 @@ const RouterFunction = (app: any, ActiveUsers: activeUsers) => {
   votesRouter.get("/", (req: Request, res: Response) => {
     try {
       return res.json({
-        votes: voteModule.getVotes(),
+        votes: voteModule.getVotes().map((vote) => {
+          return { ...vote, votes: vote.getVotes().length };
+        }),
       });
     } catch {
       return [

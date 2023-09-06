@@ -135,7 +135,7 @@ musicpicker.get("/success", async (req: Request, res: Response) => {
 });
 musicpicker.use("/api", apiRouter);
 
-app.use("/musicpicker", musicpicker);
+app.use("/", musicpicker);
 
 app.listen(process.env.PORT, () => {
   console.log(`\u001b[1;42m app is running at port ${process.env.PORT} !`);
