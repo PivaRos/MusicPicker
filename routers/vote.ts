@@ -26,6 +26,7 @@ const RouterFunction = (app: any, ActiveUsers: activeUsers) => {
         votes: voteModule.getVotes().map((vote) => {
           return { ...vote, votes: vote.getVotes().length };
         }),
+        activeusers: ActiveUsers.getUsers().length,
       });
     } catch {
       return [
