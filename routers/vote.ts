@@ -4,7 +4,7 @@ import { VoteModule } from "../modules/VoteModule";
 import { activeUsers } from "../modules/activeUser";
 import { json } from "stream/consumers";
 import { Vote, votes } from "../modules/vote";
-import { checkIfUserExists } from "../middleware";
+import { checkIfUserExists, voteAllowed } from "../middleware";
 
 var localStorage: any = null;
 
@@ -36,56 +36,68 @@ const RouterFunction = (app: any, ActiveUsers: activeUsers) => {
     }
   });
 
-  votesRouter.get("/skip", async (req: Request, res: Response) => {
-    try {
-      const acknowledged = voteModule.addVote(
-        new Vote(votes.Skip),
-        req.headers.authorization || ""
-      );
-      if (acknowledged) {
-        res.status(200);
-        return res.json({ activeUsers: ActiveUsers.getAmountOfUsers() });
-      } else {
-        return [res.status(403), res.json({ message: "user already voted" })];
+  votesRouter.get(
+    "/skip",
+    voteAllowed(votes.Skip),
+    async (req: Request, res: Response) => {
+      try {
+        const acknowledged = voteModule.addVote(
+          new Vote(votes.Skip),
+          req.headers.authorization || ""
+        );
+        if (acknowledged) {
+          res.status(200);
+          return res.json({ activeUsers: ActiveUsers.getAmountOfUsers() });
+        } else {
+          return [res.status(403), res.json({ message: "user already voted" })];
+        }
+      } catch {
+        res.sendStatus(500);
       }
-    } catch {
-      res.sendStatus(500);
     }
-  });
+  );
 
-  votesRouter.get("/volumeup", async (req: Request, res: Response) => {
-    try {
-      const acknowledged = voteModule.addVote(
-        new Vote(votes.VolumeUp),
-        req.headers.authorization || ""
-      );
-      if (acknowledged) {
-        res.status(200);
-        return res.json({ activeUsers: ActiveUsers.getAmountOfUsers() });
-      } else {
-        return [res.status(403), res.json({ message: "user already voted" })];
+  votesRouter.get(
+    "/volumeup",
+    voteAllowed(votes.VolumeUp),
+    async (req: Request, res: Response) => {
+      try {
+        const acknowledged = voteModule.addVote(
+          new Vote(votes.VolumeUp),
+          req.headers.authorization || ""
+        );
+        if (acknowledged) {
+          res.status(200);
+          return res.json({ activeUsers: ActiveUsers.getAmountOfUsers() });
+        } else {
+          return [res.status(403), res.json({ message: "user already voted" })];
+        }
+      } catch {
+        res.sendStatus(500);
       }
-    } catch {
-      res.sendStatus(500);
     }
-  });
+  );
 
-  votesRouter.get("/volumedown", async (req: Request, res: Response) => {
-    try {
-      const acknowledged = voteModule.addVote(
-        new Vote(votes.VolumeDown),
-        req.headers.authorization || ""
-      );
-      if (acknowledged) {
-        res.status(200);
-        return res.json({ activeUsers: ActiveUsers.getAmountOfUsers() });
-      } else {
-        return [res.status(403), res.json({ message: "user already voted" })];
+  votesRouter.get(
+    "/volumedown",
+    voteAllowed(votes.VolumeDown),
+    async (req: Request, res: Response) => {
+      try {
+        const acknowledged = voteModule.addVote(
+          new Vote(votes.VolumeDown),
+          req.headers.authorization || ""
+        );
+        if (acknowledged) {
+          res.status(200);
+          return res.json({ activeUsers: ActiveUsers.getAmountOfUsers() });
+        } else {
+          return [res.status(403), res.json({ message: "user already voted" })];
+        }
+      } catch {
+        res.sendStatus(500);
       }
-    } catch {
-      res.sendStatus(500);
     }
-  });
+  );
 
   return votesRouter;
 };

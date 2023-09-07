@@ -1,4 +1,5 @@
 import { type } from "node:os";
+import { votes } from "./modules/vote";
 
 export enum AppPlatform {
   SPOTIFY = "spotify",
@@ -9,6 +10,7 @@ export type appConfig = {
   platform: AppPlatform;
   genres?: string[];
   minutes_between_queue_adds: number;
+  votes: [votes];
 };
 
 export enum httpMethod {

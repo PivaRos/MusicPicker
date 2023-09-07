@@ -2,9 +2,5 @@
   "platform": "spotify",
   "adminPassword": "123456",
   "minutes_between_queue_adds": 1,
-  "votes": {
-    "Skip": "SKIP",
-    "VolumeUp": "VOLUMEUP",
-    "VolumeDown": "VOLUMEDOWN"
-  }
+  "votes": ["SKIP"]
 }

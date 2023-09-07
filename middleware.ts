@@ -4,6 +4,7 @@ import { calculate_Minutes_Time } from "./utility";
 import { Request, Response } from "node-fetch";
 import { NextFunction } from "express";
 import { activeUsers } from "./modules/activeUser";
+import { votes } from "./modules/vote";
 
 export const checkWasAdded = (req: any, res: any, next: any) => {
   const appConfig = req.app.locals.appConfig as appConfig;
@@ -78,4 +79,15 @@ export const IsAdmin = async (req: any, res: any, next: any) => {
   } else {
     res.sendStatus(401);
   }
+};
+
+export const voteAllowed = (vote: votes) => {
+  return (req: any, res: any, next: any) => {
+    const appConfig = req.app.locals.appConfig as appConfig;
+    if (appConfig.votes.includes(vote)) {
+      next();
+    } else {
+      return res.sendStatus(503);
+    }
+  };
 };
