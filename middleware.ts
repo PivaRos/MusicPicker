@@ -74,7 +74,7 @@ export const hasDevice = async (req: any, res: any, next: any) => {
 };
 
 export const IsAdmin = async (req: any, res: any, next: any) => {
-  if (req.app.locals.appConfig.adminPassword === req.Authorization) {
+  if (req.app.locals.appConfig.adminPassword === req.headers.Authorization) {
     next();
   } else {
     res.sendStatus(401);
