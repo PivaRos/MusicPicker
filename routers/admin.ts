@@ -40,7 +40,7 @@ AdminRouter.put("/password", async (req: Request, res: Response) => {
 AdminRouter.put("/minutes", async (req: Request, res: Response) => {
   try {
     //change minutes between queue adds;
-    const newMinutes = req.body.genres;
+    const newMinutes = req.body.minutes;
     req.app.locals.appConfig.minutes_between_queue_adds = newMinutes;
     await writeFileSync(
       path.join(__dirname, "../DefaultAppConfig.json"),
