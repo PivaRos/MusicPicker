@@ -52,6 +52,22 @@ AdminRouter.put("/minutes", async (req: Request, res: Response) => {
   }
 });
 
+AdminRouter.put("/appConfig", async (req: Request, res: Response) => {
+  //get the app's config
+  try {
+    //change minutes between queue adds;
+    const appConfig = req.body.appConfig;
+    req.app.locals.appConfig = appConfig;
+    await writeFileSync(
+      path.join(__dirname, "../DefaultAppConfig.json"),
+      JSON.stringify(req.app.locals.appConfig, null, 2)
+    );
+    return res.sendStatus(200);
+  } catch {
+    return res.sendStatus(500);
+  }
+});
+
 AdminRouter.get("/appConfig", async (req: Request, res: Response) => {
   //get the app's config
   try {
