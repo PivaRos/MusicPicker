@@ -148,6 +148,13 @@ musicpicker.get("/", function (req, res) {
     ? res.sendFile(path.join(__dirname, "build", "index.html"))
     : res.sendFile(path.join(__dirname, "buildnoVote", "index.html"));
 });
+
+musicpicker.get("/admin", function (req, res) {
+  const appconfig = app.locals.appConfig as appConfig;
+  appconfig.votes.length > 0
+    ? res.sendFile(path.join(__dirname, "build", "index.html"))
+    : res.sendFile(path.join(__dirname, "buildnoVote", "index.html"));
+});
 musicpicker.get("/success", async (req: Request, res: Response) => {
   return res.sendFile(path.join(__dirname, "/rawHTML/success.html"));
 });
