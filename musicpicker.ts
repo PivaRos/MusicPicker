@@ -15,6 +15,7 @@ import address from "address";
 import { SocketServer } from "./modules/socket";
 import { activeUsers } from "./modules/activeUser";
 import { VoteModule } from "./modules/VoteModule";
+import NodeCache from "node-cache";
 
 require("dotenv").config();
 
@@ -82,6 +83,9 @@ app.locals.ActiveUsers = ActiveUsers as activeUsers;
 const options = { getActiveVoters: ActiveUsers.getAmountOfUsers };
 const voteModule = new VoteModule(app.locals.API, options);
 app.locals.voteModule = voteModule;
+const trackCache = new NodeCache();
+
+app.locals.tracksCache = trackCache as NodeCache;
 
 const socketServer = SocketServer(API, {
   addUser: ActiveUsers.addUser,
@@ -111,6 +115,9 @@ apiRouter.get("/search/:query", async (req: Request, res: Response) => {
     res.status(200);
     if (!searchResponse.body.tracks)
       return [res.status(200), res.json({ message: "no tracks found" })];
+    searchResponse.body.tracks.items.forEach((track) => {
+      if (!trackCache.get(track.id)) trackCache.set(track.id, track, 25);
+    });
     res.json(
       searchResponse.body.tracks.items.map((track) => {
         return {

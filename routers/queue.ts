@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express";
 import SpotifyWebApi from "spotify-web-api-node";
 import { IsNotInQueue, checkWasAdded, hasDevice } from "../middleware";
-import { appConfig } from "./../interfaces";
-
+import { TrackItem, appConfig } from "./../interfaces";
+import NodeCache from "node-cache";
 var localStorage: any = null;
 
 if (typeof localStorage === "undefined" || localStorage === null) {
@@ -22,19 +22,28 @@ QueueRouter.get(
     let appConfig = req.app.locals.appConfig as appConfig;
     res.locals.trackUri = req.params.track_uri;
     try {
+      const tracksCache = req.app.locals.tracksCache as NodeCache;
       const uri = req.params.track_uri.split(":");
       if (uri[1] !== "track" || uri[0] !== "spotify")
         return [res.status(400), res.json({ message: "bad track uri" })];
       const API = req.app.locals.API as SpotifyWebApi;
-      const track = await API.getTrack(uri[2]);
-
-      const album = await API.getAlbum(track.body.album.id);
+      let track = tracksCache.get(uri[2]) as SpotifyApi.SingleTrackResponse;
+      if (!track) {
+        let newTrack = await API.getTrack(uri[2]);
+        track = newTrack.body;
+      }
+      const artists = await API.getArtists(
+        track.artists.map((artist) => artist.id)
+      );
+      artists.body.artists[0].genres;
       let found = appConfig.genres ? false : true;
       if (appConfig.genres) {
-        album.body.genres.map((genre) => {
-          if (appConfig.genres && appConfig.genres.includes(genre)) {
-            found = true;
-          }
+        artists.body.artists.map((artist) => {
+          artist.genres.map((genre) => {
+            if (appConfig.genres && appConfig.genres.includes(genre)) {
+              found = true;
+            }
+          });
         });
       }
       if (found) {
