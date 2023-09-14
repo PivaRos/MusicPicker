@@ -35,16 +35,22 @@ QueueRouter.get(
       const artists = await API.getArtists(
         track.artists.map((artist) => artist.id)
       );
-      artists.body.artists[0].genres;
+      let countEmpty = 0;
       let found = appConfig.genres ? false : true;
       if (appConfig.genres) {
         artists.body.artists.map((artist) => {
-          artist.genres.map((genre) => {
-            if (appConfig.genres && appConfig.genres.includes(genre)) {
-              found = true;
-            }
-          });
+          if (artist.genres.length > 0) {
+            artist.genres.map((genre) => {
+              if (appConfig.genres && appConfig.genres.includes(genre)) {
+                found = true;
+              }
+            });
+          } else {
+            //artist.genres empty.
+            countEmpty++;
+          }
         });
+        if (artists.body.artists.length === countEmpty) found = true;
       }
       if (found) {
         const result = await API.addToQueue(req.params.track_uri);
