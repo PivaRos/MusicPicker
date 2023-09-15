@@ -138,9 +138,12 @@ apiRouter.get("/search/:query", async (req: Request, res: Response) => {
 
 const musicpicker = Router();
 const appconfig = app.locals.appConfig as appConfig;
-appconfig.votes.length > 0
-  ? musicpicker.use(express.static(path.join(__dirname, "build")))
-  : musicpicker.use(express.static(path.join(__dirname, "buildnoVote")));
+
+musicpicker.use(() => {
+  appconfig.votes.length > 0
+    ? musicpicker.use(express.static(path.join(__dirname, "build")))
+    : musicpicker.use(express.static(path.join(__dirname, "buildnoVote")));
+});
 
 musicpicker.get("/", function (req, res) {
   const appconfig = app.locals.appConfig as appConfig;
