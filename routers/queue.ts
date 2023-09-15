@@ -50,8 +50,6 @@ QueueRouter.get(
             countEmpty++;
           }
         });
-        console.log(artists.body.artists.length);
-        console.log(countEmpty);
         if (artists.body.artists.length === countEmpty) found = true;
       }
       if (found) {

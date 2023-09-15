@@ -15,12 +15,6 @@ export const checkWasAdded = (req: any, res: any, next: any) => {
     calculate_Minutes_Time(req.session.track_date as Date, date) >
     appConfig.minutes_between_queue_adds
   ) {
-    console.log(
-      calculate_Minutes_Time(req.session.track_date as Date, date) >
-        appConfig.minutes_between_queue_adds
-    );
-    console.log(calculate_Minutes_Time(req.session.track_date as Date, date));
-    console.log(appConfig.minutes_between_queue_adds);
     return next();
   }
   return [
