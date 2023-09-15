@@ -16,6 +16,7 @@ import { SocketServer } from "./modules/socket";
 import { activeUsers } from "./modules/activeUser";
 import { VoteModule } from "./modules/VoteModule";
 import NodeCache from "node-cache";
+import enumsRouter from "./routers/enums";
 
 require("dotenv").config();
 
@@ -106,6 +107,7 @@ apiRouter.use("/admin", AdminRouter);
 apiRouter.use("/queue", QueueRouter);
 apiRouter.use("/player", PlayerRouter(app));
 apiRouter.use("/vote", RouterFunction(app, ActiveUsers));
+apiRouter.use("/enums", enumsRouter);
 
 apiRouter.get("/search/:query", async (req: Request, res: Response) => {
   try {
