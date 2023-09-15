@@ -139,14 +139,14 @@ apiRouter.get("/search/:query", async (req: Request, res: Response) => {
 const musicpicker = Router();
 const appconfig = app.locals.appConfig as appConfig;
 
-musicpicker.use(() => {
-  appconfig.votes.length > 0
-    ? musicpicker.use(express.static(path.join(__dirname, "build")))
-    : musicpicker.use(express.static(path.join(__dirname, "buildnoVote")));
-});
+musicpicker.use(() => {});
 
 musicpicker.get("/", function (req, res) {
   const appconfig = app.locals.appConfig as appConfig;
+
+  appconfig.votes.length > 0
+    ? musicpicker.use(express.static(path.join(__dirname, "build")))
+    : musicpicker.use(express.static(path.join(__dirname, "buildnoVote")));
   appconfig.votes.length > 0
     ? res.sendFile(path.join(__dirname, "build", "index.html"))
     : res.sendFile(path.join(__dirname, "buildnoVote", "index.html"));
@@ -154,6 +154,10 @@ musicpicker.get("/", function (req, res) {
 
 musicpicker.get("/admin", function (req, res) {
   const appconfig = app.locals.appConfig as appConfig;
+
+  appconfig.votes.length > 0
+    ? musicpicker.use(express.static(path.join(__dirname, "build")))
+    : musicpicker.use(express.static(path.join(__dirname, "buildnoVote")));
   appconfig.votes.length > 0
     ? res.sendFile(path.join(__dirname, "build", "index.html"))
     : res.sendFile(path.join(__dirname, "buildnoVote", "index.html"));
