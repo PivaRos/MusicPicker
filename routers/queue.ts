@@ -41,7 +41,10 @@ QueueRouter.get(
         artists.body.artists.map((artist) => {
           if (artist.genres.length > 0) {
             artist.genres.map((genre) => {
-              if (appConfig.genres && appConfig.genres.includes(genre)) {
+              if (
+                appConfig.genres &&
+                appConfig.genres.includes(genre.toLocaleLowerCase())
+              ) {
                 found = true;
               }
             });
