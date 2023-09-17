@@ -29,16 +29,30 @@ QueueRouter.get(
       const API = req.app.locals.API as SpotifyWebApi;
       let track = tracksCache.get(uri[2]) as SpotifyApi.SingleTrackResponse;
       if (!track) {
+        console.log("fetched new track");
         let newTrack = await API.getTrack(uri[2]);
         track = newTrack.body;
       }
-      const artists = await API.getArtists(
-        track.artists.map((artist) => artist.id)
-      );
+      let artists: SpotifyApi.ArtistObjectFull[] = [];
+      track.artists.forEach((artist) => {
+        console.log("trying get cache of artistID :" + artist.id);
+        const fullArtist = tracksCache.get(
+          artist.id
+        ) as SpotifyApi.ArtistObjectFull;
+        if (fullArtist) artists.push(fullArtist);
+      });
+
+      if (artists.length === 0) {
+        console.log("fetched new artist");
+        artists = (
+          await API.getArtists(track.artists.map((artist) => artist.id))
+        ).body.artists;
+      }
+
       let countEmpty = 0;
       let found = appConfig.genres ? false : true;
       if (appConfig.genres) {
-        artists.body.artists.map((artist) => {
+        artists.map((artist) => {
           if (artist.genres.length > 0) {
             artist.genres.map((genre) => {
               if (
@@ -53,7 +67,7 @@ QueueRouter.get(
             countEmpty++;
           }
         });
-        if (artists.body.artists.length === countEmpty) found = true;
+        if (artists.length === countEmpty) found = true;
       }
       if (found) {
         const result = await API.addToQueue(req.params.track_uri);

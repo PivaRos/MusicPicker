@@ -112,13 +112,24 @@ apiRouter.use("/enums", enumsRouter);
 apiRouter.get("/search/:query", async (req: Request, res: Response) => {
   try {
     const API = req.app.locals.API as SpotifyWebApi;
-    const searchResponse = await API.searchTracks(req.params.query);
+    const searchResponse = await API.search(req.params.query, [
+      "track",
+      "artist",
+    ]);
 
     res.status(200);
     if (!searchResponse.body.tracks)
       return [res.status(200), res.json({ message: "no tracks found" })];
     searchResponse.body.tracks.items.forEach((track) => {
-      if (!trackCache.get(track.id)) trackCache.set(track.id, track, 25);
+      if (!trackCache.get(track.id)) trackCache.set(track.id, track, 45);
+    });
+    searchResponse.body.artists?.items.forEach((artist) => {
+      if (!trackCache.get(artist.id)) {
+        trackCache.set(artist.id, artist, 45);
+        console.log(
+          "artist cache set on id: " + artist.id + " name: " + artist.name
+        );
+      }
     });
     res.json(
       searchResponse.body.tracks.items.map((track) => {
