@@ -62,7 +62,7 @@ export const refreshAccessToken = async (API: SpotifyWebApi, app: any) => {
   }
 };
 
-const authorize = async (app: any) => {
+export const authorize = async (app: any) => {
   console.log(`\u001b[1;42m Checking lisence...`);
   const lisence = { ...app.locals.lisence } as lisence;
   const HardCodedHOST = "https://api.danielgurbin.com/";
@@ -99,8 +99,8 @@ const authorize = async (app: any) => {
       })
       .catch((e: AxiosError) => {
         console.log(e.response);
-        if (e.response?.status === 409)
-          console.log("app is already registered please contact developer");
+        if (e.response?.status === 409) [];
+        console.log("app is already registered please contact developer");
         if (e.response?.status === 500) {
           console.log("unexpected Error Please Contact Develper");
         }
