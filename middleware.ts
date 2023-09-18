@@ -85,3 +85,10 @@ export const voteAllowed = (vote: votes) => {
     }
   };
 };
+
+export const cacheHeader = (timeSeconds: number) => {
+  return (req: any, res: any, next: any) => {
+    res.set("Cache-Control", `public, max-age=${timeSeconds}`);
+    next();
+  };
+};

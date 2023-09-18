@@ -1,7 +1,7 @@
 {
   "name": "musicpicker",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.1.0",
+  "description": "MusicPicker is REST API that allows you to connect your spotify account and gives end users the ability to add tracks to queue and create votes",
   "main": "dist/musicpicker.js",
   "scripts": {
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/musicpicker.js\"",

@@ -1,4 +1,4 @@
-import express, { Request, Response, Router } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 import SpotifyWebApi from "spotify-web-api-node";
 import path from "path";
 import session from "express-session";
@@ -17,6 +17,7 @@ import { activeUsers } from "./modules/activeUser";
 import { VoteModule } from "./modules/VoteModule";
 import NodeCache from "node-cache";
 import enumsRouter from "./routers/enums";
+import { cacheHeader } from "./middleware";
 
 require("dotenv").config();
 

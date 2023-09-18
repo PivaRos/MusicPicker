@@ -37,7 +37,12 @@ client_id = "<client_id>"
 client_secret = <client_secret>
 redirect_route = "/example/route"
 PORT = <PORT>
+APP_HOST = "<localhost:3000>"
+appname = "<dev-test>"
+development? = "<any text>"
 ```
+
+client_id and client_secret is the music provider credentials (spotify/youtube music)
 
 ## Usage
 
