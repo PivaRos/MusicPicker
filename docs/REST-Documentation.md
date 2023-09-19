@@ -30,7 +30,7 @@
 #### Managing Device's Queue
 
 <details>
- <summary><code>GET</code> <code><b>/api/queue/add/:trackUri</b></code> <code>(gets all in-memory stub & proxy configs)</code></summary>
+ <summary><code>GET</code> <code><b>/api/queue/add/:trackUri</b></code> <code>(add the track to device's queue)</code></summary>
 
 ##### Parameters
 
