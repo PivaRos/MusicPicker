@@ -14,8 +14,8 @@
 ##### Responses
 
 > | http code | content-type | response                        |
-> | --------- | ------------ | ------------------------------- | --- |
-> | `302`     | `N/A`        | `Redirect to Spotify auth flow` |     |
+> | --------- | ------------ | ------------------------------- |
+> | `302`     | `N/A`        | `Redirect to Spotify auth flow` |
 
 ##### Example cURL
 
@@ -69,9 +69,9 @@
 ##### Responses
 
 > | http code | content-type               | response                |
-> | --------- | -------------------------- | ----------------------- | --- |
+> | --------- | -------------------------- | ----------------------- |
 > | `200`     | `application/json`         | `{ playerState }`       |
-> | `500`     | `text/plain;charset=UTF-8` | `{ device: undefined }` |     |
+> | `500`     | `text/plain;charset=UTF-8` | `{ device: undefined }` |
 
 ##### Example cURL
 
