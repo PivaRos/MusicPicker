@@ -46,6 +46,8 @@ client_id and client_secret is the music provider credentials (spotify/youtube m
 
 ## Usage
 
+[Documentation](docs/REST-Documentation.md)
+
 Then start the application as developer
 
 ```bash
