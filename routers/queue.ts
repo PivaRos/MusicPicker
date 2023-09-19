@@ -96,28 +96,28 @@ QueueRouter.get(
   }
 );
 
-QueueRouter.get("/current", async (req: Request, res: Response) => {
-  try {
-    const API = req.app.locals.API as SpotifyWebApi;
-    const queue = await API.getQueue();
-    return [
-      res.status(200),
-      res.json({
-        currently_playing: {
-          name: queue.body.currently_playing.name,
-          uri: queue.body.currently_playing.uri,
-        },
-        queue: queue.body.queue.map((track) => {
-          return {
-            name: track.name,
-            uri: track.uri,
-          };
-        }),
-      }),
-    ];
-  } catch {
-    res.sendStatus(500);
-  }
-});
+// QueueRouter.get("/current", async (req: Request, res: Response) => {
+//   try {
+//     const API = req.app.locals.API as SpotifyWebApi;
+//     const queue = await API.getQueue();
+//     return [
+//       res.status(200),
+//       res.json({
+//         currently_playing: {
+//           name: queue.body.currently_playing.name,
+//           uri: queue.body.currently_playing.uri,
+//         },
+//         queue: queue.body.queue.map((track) => {
+//           return {
+//             name: track.name,
+//             uri: track.uri,
+//           };
+//         }),
+//       }),
+//     ];
+//   } catch {
+//     res.sendStatus(500);
+//   }
+// });
 
 export default QueueRouter;

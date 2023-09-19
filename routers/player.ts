@@ -20,8 +20,21 @@ const router = (app: any) => {
     try {
       if (!app.locals.refreshingAccessToken) {
         const API = app.locals.API as SpotifyWebApi;
-        const result = await API.getQueue();
-        const result2 = await API.getMyCurrentPlaybackState();
+        const allResult = await Promise.allSettled([
+          API.getQueue(),
+          API.getMyCurrentPlaybackState(),
+        ]);
+        let result, result2;
+        if (allResult[0].status === "fulfilled") {
+          result = allResult[0].value;
+        } else {
+          throw new Error(allResult[0].reason);
+        }
+        if (allResult[1].status === "fulfilled") {
+          result2 = allResult[1].value;
+        } else {
+          throw new Error(allResult[1].reason);
+        }
         let theAlbum;
         let genres;
         if (

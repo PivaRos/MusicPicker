@@ -173,7 +173,15 @@ musicpicker.get("/success", async (req: Request, res: Response) => {
   return res.sendFile(path.join(__dirname, "/rawHTML/success.html"));
 });
 musicpicker.use("/api", apiRouter);
-
+// musicpicker.use("/test/:trackid", async (req: Request, res: Response) => {
+//   try {
+//     const result = await API.addToQueue(req.params.trackid);
+//     console.log(result);
+//     return res.sendStatus(200);
+//   } catch (e) {
+//     console.log(e);
+//   }
+// });
 app.use("/", musicpicker);
 
 app.listen(process.env.PORT, () => {
