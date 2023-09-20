@@ -41,7 +41,7 @@ const RouterFunction = (app: any, ActiveUsers: activeUsers) => {
     voteAllowed(votes.Skip),
     async (req: Request, res: Response) => {
       try {
-        const acknowledged = voteModule.addVote(
+        const acknowledged = await voteModule.addVote(
           new Vote(votes.Skip),
           req.headers.authorization || ""
         );
@@ -62,7 +62,7 @@ const RouterFunction = (app: any, ActiveUsers: activeUsers) => {
     voteAllowed(votes.VolumeUp),
     async (req: Request, res: Response) => {
       try {
-        const acknowledged = voteModule.addVote(
+        const acknowledged = await voteModule.addVote(
           new Vote(votes.VolumeUp),
           req.headers.authorization || ""
         );
@@ -83,7 +83,7 @@ const RouterFunction = (app: any, ActiveUsers: activeUsers) => {
     voteAllowed(votes.VolumeDown),
     async (req: Request, res: Response) => {
       try {
-        const acknowledged = voteModule.addVote(
+        const acknowledged = await voteModule.addVote(
           new Vote(votes.VolumeDown),
           req.headers.authorization || ""
         );
