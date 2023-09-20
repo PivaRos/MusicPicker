@@ -2,10 +2,10 @@
   "name": "musicpicker",
   "version": "1.1.0",
   "description": "MusicPicker is REST API that allows you to connect your spotify account and gives end users the ability to add tracks to queue and create votes",
-  "main": "dist/musicpicker.js",
+  "main": "dist/src/musicpicker.js",
   "scripts": {
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/musicpicker.js\"",
-    "start": "tsc && node ./dist/musicpicker.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/musicpicker.js\"",
+    "start": "tsc && node ./dist/src/musicpicker.js",
     "test": "npx tsc && jest"
   },
   "keywords": [],
