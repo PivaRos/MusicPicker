@@ -17,7 +17,6 @@ import { activeUsers } from "./modules/activeUser";
 import { VoteModule } from "./modules/VoteModule";
 import NodeCache from "node-cache";
 import enumsRouter from "./routers/enums";
-import { cacheHeader } from "./middleware";
 
 require("dotenv").config();
 
@@ -169,9 +168,24 @@ musicpicker.get("/admin", function (req, res) {
     ? res.sendFile(path.join(__dirname, "build", "index.html"))
     : res.sendFile(path.join(__dirname, "buildnoVote", "index.html"));
 });
-musicpicker.get("/success", async (req: Request, res: Response) => {
-  return res.sendFile(path.join(__dirname, "/rawHTML/success.html"));
+musicpicker.get(
+  process.env.success_route || "/success",
+  async (req: Request, res: Response) => {
+    return res.sendFile(path.join(__dirname, "/rawHTML/success.html"));
+  }
+);
+
+musicpicker.get("/test/1", async (req, res) => {
+  try {
+    const result = await API.addToQueue("spotify:track:3OFGkaztvfjW0McKujTzdI");
+    console.log(result);
+    res.sendStatus(200);
+  } catch (e: any) {
+    console.log(e.body.error);
+    res.sendStatus(200);
+  }
 });
+
 musicpicker.use("/api", apiRouter);
 // musicpicker.use("/test/:trackid", async (req: Request, res: Response) => {
 //   try {

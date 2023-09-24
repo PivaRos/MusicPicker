@@ -1,7 +1,6 @@
 import SpotifyWebApi from "spotify-web-api-node";
 import { appConfig } from "./interfaces";
 import { calculate_Minutes_Time } from "./utility";
-import { Request, Response } from "node-fetch";
 import { NextFunction } from "express";
 import { activeUsers } from "./modules/activeUser";
 import { votes } from "./modules/vote";
@@ -52,9 +51,7 @@ export const IsNotInQueue = (req: any, res: any, next: NextFunction) => {
 
 export const hasDevice = async (req: any, res: any, next: any) => {
   try {
-    const API = req.app.locals.API as SpotifyWebApi;
-    const MyDevices = await API.getMyDevices();
-    if (MyDevices.body.devices.length > 0) {
+    if (req.app.locals.playerState !== undefined) {
       next();
     } else {
       return [

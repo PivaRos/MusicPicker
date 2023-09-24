@@ -61,6 +61,7 @@ const router = (app: any) => {
         }
       }
     } catch (e) {
+      app.locals.playerState = undefined;
       console.log(e);
     }
   }, 1550);
