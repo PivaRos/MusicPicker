@@ -1,7 +1,10 @@
 import SpotifyWebApi from "spotify-web-api-node";
 import { AppPlatform, appConfig } from "../interfaces";
+import path from "path";
 
-let appConfig = require("./DefaultAppConfig.json") as appConfig;
+const configPath = path.join(__dirname, "/DefaultAppConfig.json");
+
+let appConfig = require(configPath) as appConfig;
 
 class ApiAdapter {
   API: any;

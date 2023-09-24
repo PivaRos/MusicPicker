@@ -1,5 +1,3 @@
-import config from "../../DefaultAppConfig.json";
-
 export enum votes {
   VolumeUp = "VOLUMEUP",
   VolumeDown = "VOLUMEDOWN",
