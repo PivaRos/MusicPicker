@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response, Router } from "express";
+import express, { Request, Response, Router } from "express";
 import SpotifyWebApi from "spotify-web-api-node";
 import path from "path";
 import session from "express-session";
@@ -49,7 +49,8 @@ if (typeof localStorage === "undefined" || localStorage === null) {
   localStorage = new LocalStorage("./scratch");
 }
 
-let appConfig = require("./DefaultAppConfig.json") as appConfig;
+const configPath = path.join(__dirname, "/DefaultAppConfig.json");
+let appConfig = require(configPath) as appConfig;
 app.locals.appConfig = appConfig;
 
 const redirect_route = process.env.redirect_route || "";

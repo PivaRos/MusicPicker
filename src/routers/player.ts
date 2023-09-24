@@ -1,8 +1,6 @@
 import { Request, Response, Router } from "express";
-import path from "path";
 import SpotifyWebApi from "spotify-web-api-node";
 import { IsAdmin, hasDevice } from "../middleware";
-import { appConfig } from "./../interfaces";
 
 var localStorage: any = null;
 
@@ -10,8 +8,6 @@ if (typeof localStorage === "undefined" || localStorage === null) {
   var LocalStorage = require("node-localstorage").LocalStorage;
   localStorage = new LocalStorage("./scratch");
 }
-
-let appConfig = require("./../DefaultAppConfig.json") as appConfig;
 
 const router = (app: any) => {
   const PlayerRouter = Router();
