@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "https://musicpicker.danielgurbin.com/static/css/main.59a75638.css",
+    "main.js": "https://musicpicker.danielgurbin.com/static/js/main.cca0f096.js",
+    "index.html": "https://musicpicker.danielgurbin.com/index.html",
+    "main.59a75638.css.map": "https://musicpicker.danielgurbin.com/static/css/main.59a75638.css.map",
+    "main.cca0f096.js.map": "https://musicpicker.danielgurbin.com/static/js/main.cca0f096.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.59a75638.css",
+    "static/js/main.cca0f096.js"
+  ]
+}
