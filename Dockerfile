@@ -3,4 +3,5 @@ WORKDIR /MusicPicker
 COPY . /MusicPicker
 RUN npm install
 EXPOSE 8000
-CMD node ./dist/src/musicpicker.js
+
+CMD ["cp ./MusicPicker/DefaultAppConfig.json ./MusicPicker/dist/src/","npm start"]
