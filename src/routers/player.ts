@@ -84,7 +84,7 @@ const router = (app: any) => {
 
   PlayerRouter.get("/current", async (req: Request, res: Response) => {
     if (req.app.locals.playerState) return res.json(req.app.locals.playerState);
-    else return [res.status(500), res.json({ device: undefined })];
+    else return [res.status(500), res.json({ message: "no player state" })];
   });
   return PlayerRouter;
 };

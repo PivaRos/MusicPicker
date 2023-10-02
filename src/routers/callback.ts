@@ -26,6 +26,8 @@ callbackRouter.get("/spotify", async (req: Request, res: Response) => {
           localStorage.setItem("UpdateToken", resGrant.body.refresh_token);
           API.setAccessToken(resGrant.body.access_token);
           API.setRefreshToken(resGrant.body.refresh_token);
+          req.app.locals.API = API;
+          req.app.locals.refreshingAccessToken = false;
           console.log("\u001b[1;32m logged in successfully !");
           return res.redirect(process.env.success_route || "/success");
         } else {
