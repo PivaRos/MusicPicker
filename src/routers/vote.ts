@@ -6,13 +6,6 @@ import { json } from "stream/consumers";
 import { Vote, votes } from "../modules/vote";
 import { checkIfUserExists, voteAllowed } from "../middleware";
 
-var localStorage: any = null;
-
-if (typeof localStorage === "undefined" || localStorage === null) {
-  var LocalStorage = require("node-localstorage").LocalStorage;
-  localStorage = new LocalStorage("./scratch");
-}
-
 const RouterFunction = (app: any, ActiveUsers: activeUsers) => {
   const votesRouter = Router();
 

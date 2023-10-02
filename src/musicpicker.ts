@@ -47,7 +47,8 @@ app.use(
 var localStorage: any = null;
 if (typeof localStorage === "undefined" || localStorage === null) {
   var LocalStorage = require("node-localstorage").LocalStorage;
-  localStorage = new LocalStorage("./scratch");
+  var path1 = path.join(process.env.pvPath || "", "./scratch");
+  localStorage = new LocalStorage(path1);
 }
 
 const configPath = path.join(__dirname, "/DefaultAppConfig.json");

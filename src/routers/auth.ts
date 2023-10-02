@@ -1,12 +1,5 @@
 import { Request, Response, Router } from "express";
 
-var localStorage: any = null;
-
-if (typeof localStorage === "undefined" || localStorage === null) {
-  var LocalStorage = require("node-localstorage").LocalStorage;
-  localStorage = new LocalStorage("./scratch");
-}
-
 const AuthRouter = Router();
 
 AuthRouter.get("/login", (req: Request, res: Response) => {

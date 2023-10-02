@@ -2,15 +2,16 @@ import SpotifyWebApi from "spotify-web-api-node";
 import { lisence } from "./interfaces";
 import axios, { AxiosError } from "axios";
 import { listenerCount } from "process";
+import path from "path";
 require("dotenv").config();
 
 const dev = process.env.dev;
 
 var localStorage: any = null;
-
 if (typeof localStorage === "undefined" || localStorage === null) {
   var LocalStorage = require("node-localstorage").LocalStorage;
-  localStorage = new LocalStorage("./scratch");
+  var path1 = path.join(process.env.pvPath || "", "./scratch");
+  localStorage = new LocalStorage(path1);
 }
 
 export var generateRandomString = function (length: number) {

@@ -1,11 +1,13 @@
 import { Request, Response, Router } from "express";
+import path from "path";
 import SpotifyWebApi from "spotify-web-api-node";
 
 var localStorage: any = null;
-
 if (typeof localStorage === "undefined" || localStorage === null) {
   var LocalStorage = require("node-localstorage").LocalStorage;
-  localStorage = new LocalStorage("./scratch");
+  var path1 = path.join(process.env.pvPath || "", "./scratch");
+  console.log("callback : " + path1);
+  localStorage = new LocalStorage(path1);
 }
 
 const callbackRouter = Router();

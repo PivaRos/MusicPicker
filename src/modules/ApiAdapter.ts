@@ -2,7 +2,14 @@ import SpotifyWebApi from "spotify-web-api-node";
 import { AppPlatform, appConfig } from "../interfaces";
 import path from "path";
 
-const configPath = path.join(__dirname, "/DefaultAppConfig.json");
+if (process.env.prod) {
+  __dirname = "/";
+}
+
+const configPath = path.join(
+  __dirname,
+  "/home/daniel/k8s/storage/musicpicker-demo/DefaultAppConfig.json"
+);
 
 let appConfig = require(configPath) as appConfig;
 
