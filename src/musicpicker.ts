@@ -17,7 +17,6 @@ import { activeUsers } from "./modules/activeUser";
 import { VoteModule } from "./modules/VoteModule";
 import NodeCache from "node-cache";
 import enumsRouter from "./routers/enums";
-import { rateLimit } from "express-rate-limit";
 
 require("dotenv").config();
 
@@ -112,57 +111,45 @@ apiRouter.use("/player", PlayerRouter(app));
 apiRouter.use("/vote", RouterFunction(app, ActiveUsers));
 apiRouter.use("/enums", enumsRouter);
 
-const searchLimiter = rateLimit({
-  windowMs: 60 * 1000, // 60 seconds
-  limit: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-  standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  // store: ... , // Use an external store for more precise rate limiting
-});
+apiRouter.get("/search/:query", async (req: Request, res: Response) => {
+  try {
+    const API = req.app.locals.API as SpotifyWebApi;
+    const searchResponse = await API.search(req.params.query, [
+      "track",
+      "artist",
+    ]);
 
-apiRouter.get(
-  "/search/:query",
-  searchLimiter,
-  async (req: Request, res: Response) => {
-    try {
-      const API = req.app.locals.API as SpotifyWebApi;
-      const searchResponse = await API.search(req.params.query, [
-        "track",
-        "artist",
-      ]);
-
-      res.status(200);
-      if (!searchResponse.body.tracks)
-        return [res.status(200), res.json({ message: "no tracks found" })];
-      searchResponse.body.tracks.items.forEach((track) => {
-        if (!trackCache.get(track.id)) trackCache.set(track.id, track, 45);
-      });
-      searchResponse.body.artists?.items.forEach((artist) => {
-        if (!trackCache.get(artist.id)) {
-          trackCache.set(artist.id, artist, 45);
-          console.log(
-            "artist cache set on id: " + artist.id + " name: " + artist.name
-          );
-        }
-      });
-      res.json(
-        searchResponse.body.tracks.items.map((track) => {
-          return {
-            uri: track.uri,
-            name: track.name,
-            artists: track.artists.map((artist) => {
-              return artist.name;
-            }),
-            images: track.album.images as image[],
-          };
-        })
-      );
-    } catch (e) {
-      console.log(e);
-      return res.sendStatus(500);
-    }
+    res.status(200);
+    if (!searchResponse.body.tracks)
+      return [res.status(200), res.json({ message: "no tracks found" })];
+    searchResponse.body.tracks.items.forEach((track) => {
+      if (!trackCache.get(track.id)) trackCache.set(track.id, track, 45);
+    });
+    searchResponse.body.artists?.items.forEach((artist) => {
+      if (!trackCache.get(artist.id)) {
+        trackCache.set(artist.id, artist, 45);
+        console.log(
+          "artist cache set on id: " + artist.id + " name: " + artist.name
+        );
+      }
+    });
+    res.json(
+      searchResponse.body.tracks.items.map((track) => {
+        return {
+          uri: track.uri,
+          name: track.name,
+          artists: track.artists.map((artist) => {
+            return artist.name;
+          }),
+          images: track.album.images as image[],
+        };
+      })
+    );
+  } catch (e) {
+    console.log(e);
+    return res.sendStatus(500);
   }
-);
+});
 
 const musicpicker = Router();
 const appconfig = app.locals.appConfig as appConfig;
