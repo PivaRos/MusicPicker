@@ -1,5 +1,6 @@
 import express, { Request, Response, Router } from "express";
 import SpotifyWebApi from "spotify-web-api-node";
+import { ApiAdapter } from "./modules/ApiAdapter";
 import path from "path";
 import session from "express-session";
 import AuthRouter from "./routers/auth";
@@ -17,6 +18,7 @@ import { activeUsers } from "./modules/activeUser";
 import { VoteModule } from "./modules/VoteModule";
 import NodeCache from "node-cache";
 import enumsRouter from "./routers/enums";
+import { json } from "node:stream/consumers";
 
 require("dotenv").config();
 
@@ -60,11 +62,15 @@ const client_secret = process.env.client_secret || "";
 
 const HOST = process.env.HOST || "http://localhost:" + process.env.PORT + "/";
 
-const API = new SpotifyWebApi({
-  clientId: client_id,
-  clientSecret: client_secret,
-  redirectUri: HOST + redirect_route || "",
-});
+const API = new ApiAdapter(
+  {
+    clientId: client_id,
+    clientSecret: client_secret,
+    redirectUri: HOST + redirect_route || "",
+  },
+  1000 * 60,
+  160
+);
 app.locals.API = API;
 
 address.mac((err, addr) => {
@@ -113,38 +119,50 @@ apiRouter.use("/enums", enumsRouter);
 
 apiRouter.get("/search/:query", async (req: Request, res: Response) => {
   try {
-    const API = req.app.locals.API as SpotifyWebApi;
-    const searchResponse = await API.search(req.params.query, [
-      "track",
-      "artist",
-    ]);
+    const API = req.app.locals.API as ApiAdapter;
+    var check = API.checkBeforeRequest();
+    if (check === 0) {
+      const searchResponse = await API.search(req.params.query, [
+        "track",
+        "artist",
+      ]);
+      API.addToFollower();
 
-    res.status(200);
-    if (!searchResponse.body.tracks)
-      return [res.status(200), res.json({ message: "no tracks found" })];
-    searchResponse.body.tracks.items.forEach((track) => {
-      if (!trackCache.get(track.id)) trackCache.set(track.id, track, 45);
-    });
-    searchResponse.body.artists?.items.forEach((artist) => {
-      if (!trackCache.get(artist.id)) {
-        trackCache.set(artist.id, artist, 45);
-        console.log(
-          "artist cache set on id: " + artist.id + " name: " + artist.name
-        );
-      }
-    });
-    res.json(
-      searchResponse.body.tracks.items.map((track) => {
-        return {
-          uri: track.uri,
-          name: track.name,
-          artists: track.artists.map((artist) => {
-            return artist.name;
-          }),
-          images: track.album.images as image[],
-        };
-      })
-    );
+      res.status(200);
+      if (!searchResponse.body.tracks)
+        return [res.status(200), res.json({ message: "no tracks found" })];
+      searchResponse.body.tracks.items.forEach((track) => {
+        if (!trackCache.get(track.id)) trackCache.set(track.id, track, 45);
+      });
+      searchResponse.body.artists?.items.forEach((artist) => {
+        if (!trackCache.get(artist.id)) {
+          trackCache.set(artist.id, artist, 45);
+          console.log(
+            "artist cache set on id: " + artist.id + " name: " + artist.name
+          );
+        }
+      });
+      res.json(
+        searchResponse.body.tracks.items.map((track) => {
+          return {
+            uri: track.uri,
+            name: track.name,
+            artists: track.artists.map((artist) => {
+              return artist.name;
+            }),
+            images: track.album.images as image[],
+          };
+        })
+      );
+    } else if (check === -1) {
+      //slow down
+      return [res.status(429), res.json({ message: "SLOWDOWN" })];
+    } else {
+      return [
+        res.status(429),
+        res.setHeader("retry-after", Math.round(check / 1000)),
+      ];
+    }
   } catch (e) {
     console.log(e);
     return res.sendStatus(500);
