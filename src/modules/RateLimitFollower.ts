@@ -16,8 +16,6 @@ export class RateLimitFollower {
   }
 
   private checktime = () => {
-    console.log(this.PerTime);
-    console.log(this.maxLimit);
     if (Date.now() - this.lastCheck > this.PerTime) {
       //if need to restart counting
       this.lastCheck = Date.now();
@@ -30,8 +28,6 @@ export class RateLimitFollower {
     this.checktime();
     const currentRate = this.Requests / (Date.now() - this.lastCheck);
     const expectedRate = this.maxLimit / this.PerTime;
-    console.log(currentRate);
-    console.log(expectedRate);
     return currentRate <= expectedRate;
   };
 

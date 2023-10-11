@@ -16,7 +16,6 @@ const router = (app: any) => {
       if (!app.locals.refreshingAccessToken) {
         const API = app.locals.API as ApiAdapter;
         var check = API.checkBeforeRequest(2);
-        console.log(check);
         if (check === 0) {
           const allResult = await Promise.allSettled([
             API.getQueue(),
