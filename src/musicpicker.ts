@@ -118,7 +118,7 @@ apiRouter.use("/vote", RouterFunction(app, ActiveUsers));
 apiRouter.use("/enums", enumsRouter);
 
 apiRouter.get("/appconfig", (req, res) => {
-  return res.json({ ...appconfig, adminPassword: undefined });
+  return res.json({ ...req.app.locals.appConfig, adminPassword: undefined });
 });
 
 apiRouter.get("/search/:query", async (req: Request, res: Response) => {

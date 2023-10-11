@@ -4,12 +4,12 @@
   "description": "MusicPicker is REST API that allows you to connect your spotify account and gives end users the ability to add tracks to queue and create votes",
   "main": "dist/src/musicpicker.js",
   "scripts": {
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/musicpicker.js\"",
+    "dev": "concurrently \"npm run build --watch\" \"nodemon -q dist/src/musicpicker.js\"",
     "clean": "rimraf dist/",
     "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css src/DefaultAppConfig.json dist/src",
     "build": "npm run clean && tsc && npm run copy-files",
     "start": "npm run build && node ./dist/src/musicpicker.js",
-    "test": "npx tsc && jest"
+    "test": "npm run build && jest"
   },
   "keywords": [],
   "author": "",
