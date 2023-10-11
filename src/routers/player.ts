@@ -6,12 +6,17 @@ import { ApiAdapter } from "../modules/ApiAdapter";
 const router = (app: any) => {
   const PlayerRouter = Router();
 
+  const wait = async (ms: number) => {
+    await new Promise((r) => setTimeout(r, ms));
+  };
+
   const updateStateInterval = setInterval(async () => {
     try {
+      await wait(1000);
       if (!app.locals.refreshingAccessToken) {
         const API = app.locals.API as ApiAdapter;
-        var check = API.checkBeforeRequest();
-
+        var check = API.checkBeforeRequest(2);
+        console.log(check);
         if (check === 0) {
           const allResult = await Promise.allSettled([
             API.getQueue(),

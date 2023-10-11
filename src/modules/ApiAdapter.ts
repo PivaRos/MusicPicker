@@ -14,11 +14,10 @@ export class ApiAdapter extends SpotifyWebApi {
 
   addToFollower = (number?: number) => {
     if (!number) number = 1;
-    this.rateLimitFollower.addToFollow(number);
-    return this.rateLimitFollower.GoodRate();
+    return this.rateLimitFollower.addToFollow(number);
   };
 
-  checkBeforeRequest = () => {
-    return this.rateLimitFollower.checkforAllow();
+  checkBeforeRequest = (number?: number) => {
+    return this.rateLimitFollower.checkforAllow(number);
   };
 }

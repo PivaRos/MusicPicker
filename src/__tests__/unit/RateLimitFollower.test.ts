@@ -21,6 +21,7 @@ describe("RateLimitFollower module", () => {
   });
 
   test("Good Rate Check 2", async () => {
+    expect(rateLimitFollower.checkforAllow(10)).toBeLessThanOrEqual(0);
     expect(rateLimitFollower.addToFollow(10)).toBe(true);
     expect(rateLimitFollower.GoodRate()).toBe(false);
     expect(rateLimitFollower.checkforAllow()).toBeLessThanOrEqual(0);

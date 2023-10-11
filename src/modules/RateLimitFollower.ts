@@ -16,6 +16,8 @@ export class RateLimitFollower {
   }
 
   private checktime = () => {
+    console.log(this.PerTime);
+    console.log(this.maxLimit);
     if (Date.now() - this.lastCheck > this.PerTime) {
       //if need to restart counting
       this.lastCheck = Date.now();
@@ -26,14 +28,18 @@ export class RateLimitFollower {
   //returns true if on good rate false if need to ease if the requests
   GoodRate = () => {
     this.checktime();
-
     const currentRate = this.Requests / (Date.now() - this.lastCheck);
     const expectedRate = this.maxLimit / this.PerTime;
+    console.log(currentRate);
+    console.log(expectedRate);
     return currentRate <= expectedRate;
   };
 
-  checkforAllow = () => {
-    if (this.Requests >= this.maxLimit) {
+  checkforAllow = (number?: number) => {
+    this.checktime();
+    if (!number) number = 1;
+    const isOverLimit = this.Requests + number >= this.maxLimit;
+    if (isOverLimit) {
       return this.PerTime - (Date.now() - this.lastCheck);
     }
     if (this.GoodRate()) {
@@ -44,6 +50,7 @@ export class RateLimitFollower {
   };
 
   addToFollow = (number: number) => {
+    this.checktime();
     if (this.Requests + number > this.maxLimit) {
       return false;
     } else {
