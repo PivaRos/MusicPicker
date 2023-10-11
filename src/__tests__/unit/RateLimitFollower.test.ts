@@ -32,7 +32,25 @@ describe("RateLimitFollower module", () => {
   test("Good Rate Check 3", async () => {
     expect(rateLimitFollower.addToFollow(180)).toBe(false);
     expect(rateLimitFollower.addToFollow(169)).toBe(true);
-    expect(rateLimitFollower.checkforAllow()).toBeGreaterThan(0);
+    expect(rateLimitFollower.checkforAllow(1)).toBeGreaterThan(0);
     expect(rateLimitFollower.addToFollow(1)).toBe(false);
+  });
+
+  test("check time update", async () => {
+    const rateLimitFollower2 = new RateLimitFollower({
+      maxLimit: 1,
+      PerTime: 2000,
+    });
+    expect(rateLimitFollower2.GoodRate()).toBe(true);
+    expect(rateLimitFollower2.checkforAllow(1)).toBeLessThanOrEqual(0);
+    expect(rateLimitFollower2.addToFollow(1)).toBe(true);
+    expect(rateLimitFollower2.checkforAllow(1)).toBeGreaterThan(0);
+    expect(rateLimitFollower2.addToFollow(1)).toBe(false);
+    await wait(2001);
+    expect(rateLimitFollower2.GoodRate()).toBe(true);
+    expect(rateLimitFollower2.checkforAllow(1)).toBeLessThanOrEqual(0);
+    expect(rateLimitFollower2.addToFollow(1)).toBe(true);
+    expect(rateLimitFollower2.checkforAllow(1)).toBeGreaterThan(0);
+    expect(rateLimitFollower2.addToFollow(1)).toBe(false);
   });
 });

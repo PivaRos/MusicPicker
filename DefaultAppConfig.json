@@ -1,5 +1,7 @@
 {
   "platform": "spotify",
+  "enableVotes": "true",
+  "enableApp": "true",
   "adminPassword": "123456",
   "minutes_between_queue_adds": 1,
   "votes": ["SKIP"],

@@ -26,22 +26,30 @@ export class RateLimitFollower {
   //returns true if on good rate false if need to ease if the requests
   GoodRate = () => {
     this.checktime();
+
     const currentRate = this.Requests / (Date.now() - this.lastCheck);
     const expectedRate = this.maxLimit / this.PerTime;
+
+    console.log(currentRate);
+    console.log(expectedRate);
+    if (Number.isNaN(currentRate)) return true;
     return currentRate <= expectedRate;
   };
 
+  //when good rate (0) when not -1
   checkforAllow = (number?: number) => {
     this.checktime();
     if (!number) number = 1;
-    const isOverLimit = this.Requests + number >= this.maxLimit;
+    const isOverLimit = this.Requests + number > this.maxLimit;
     if (isOverLimit) {
-      return this.PerTime - (Date.now() - this.lastCheck);
-    }
-    if (this.GoodRate()) {
-      return 0;
+      const timeToTryAgain = this.PerTime - (Date.now() - this.lastCheck);
+      return timeToTryAgain; // is positive number
     } else {
-      return -1;
+      if (this.GoodRate()) {
+        return 0;
+      } else {
+        return -1;
+      }
     }
   };
 

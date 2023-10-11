@@ -15,14 +15,6 @@ export const SocketServer = (
   const server = new WebSocketServer({
     port: process.env.WebSocketPORT ? +process.env.WebSocketPORT : 3000,
     verifyClient: async (info, callback) => {
-      if (
-        !process.env.development &&
-        info.req.headers.host !== process.env.APP_HOST
-      )
-        callback(false, 401, "bad origin");
-      !process.env.development &&
-        !info.secure &&
-        callback(false, 400, "not secure");
       callback(true, 200);
     },
   });

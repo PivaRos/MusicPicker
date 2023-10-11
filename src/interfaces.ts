@@ -11,6 +11,9 @@ export type appConfig = {
   genres?: string[];
   minutes_between_queue_adds: number;
   votes: [votes];
+  enableVotes: string;
+  enableApp: string;
+  adminPassword: string;
 };
 
 export enum httpMethod {

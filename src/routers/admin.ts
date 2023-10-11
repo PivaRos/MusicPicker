@@ -17,10 +17,7 @@ AdminRouter.put("/genres", async (req: Request, res: Response) => {
     const newGenres = req.body.genres;
     req.app.locals.appConfig.genres = newGenres;
     await writeFileSync(
-      path.join(
-        __dirname,
-        "../home/daniel/k8s/storage/musicpicker-demo/DefaultAppConfig.json"
-      ),
+      path.join(__dirname, "../DefaultAppConfig.json"),
       JSON.stringify(req.app.locals.appConfig, null, 2)
     );
     return res.sendStatus(200);
@@ -35,10 +32,7 @@ AdminRouter.put("/password", async (req: Request, res: Response) => {
     const newPassword = req.body.password;
     req.app.locals.appConfig.adminPassword = newPassword;
     await writeFileSync(
-      path.join(
-        __dirname,
-        "../home/daniel/k8s/storage/musicpicker-demo/DefaultAppConfig.json"
-      ),
+      path.join(__dirname, "../DefaultAppConfig.json"),
       JSON.stringify(req.app.locals.appConfig, null, 2)
     );
     return res.sendStatus(200);
@@ -53,10 +47,7 @@ AdminRouter.put("/minutes", async (req: Request, res: Response) => {
     const newMinutes = req.body.minutes;
     req.app.locals.appConfig.minutes_between_queue_adds = newMinutes;
     await writeFileSync(
-      path.join(
-        __dirname,
-        "../home/daniel/k8s/storage/musicpicker-demo/DefaultAppConfig.json"
-      ),
+      path.join(__dirname, "../DefaultAppConfig.json"),
       JSON.stringify(req.app.locals.appConfig, null, 2)
     );
     return res.sendStatus(200);
@@ -72,10 +63,7 @@ AdminRouter.put("/appConfig", async (req: Request, res: Response) => {
     const appConfig = req.body.appConfig;
     req.app.locals.appConfig = appConfig;
     await writeFileSync(
-      path.join(
-        __dirname,
-        "../home/daniel/k8s/storage/musicpicker-demo/DefaultAppConfig.json"
-      ),
+      path.join(__dirname, "../DefaultAppConfig.json"),
       JSON.stringify(req.app.locals.appConfig, null, 2)
     );
     return res.sendStatus(200);

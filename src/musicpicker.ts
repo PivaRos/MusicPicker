@@ -117,6 +117,10 @@ apiRouter.use("/player", PlayerRouter(app));
 apiRouter.use("/vote", RouterFunction(app, ActiveUsers));
 apiRouter.use("/enums", enumsRouter);
 
+apiRouter.get("/appconfig", (req, res) => {
+  return res.json({ ...appconfig, adminPassword: undefined });
+});
+
 apiRouter.get("/search/:query", async (req: Request, res: Response) => {
   try {
     const API = req.app.locals.API as ApiAdapter;
@@ -194,17 +198,6 @@ musicpicker.get(
     return res.sendFile(path.join(__dirname, "/rawHTML/success.html"));
   }
 );
-
-musicpicker.get("/test/1", async (req, res) => {
-  try {
-    const result = await API.addToQueue("spotify:track:3OFGkaztvfjW0McKujTzdI");
-    console.log(result);
-    res.sendStatus(200);
-  } catch (e: any) {
-    console.log(e.body.error);
-    res.sendStatus(200);
-  }
-});
 
 musicpicker.use("/api", apiRouter);
 // musicpicker.use("/test/:trackid", async (req: Request, res: Response) => {
