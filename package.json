@@ -5,7 +5,10 @@
   "main": "dist/src/musicpicker.js",
   "scripts": {
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/musicpicker.js\"",
-    "start": "tsc && node ./dist/src/musicpicker.js",
+    "clean": "rimraf dist/",
+    "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css src/DefaultAppConfig.json dist/src",
+    "build": "npm run clean && tsc && npm run copy-files",
+    "start": "npm run build && node ./dist/src/musicpicker.js",
     "test": "npx tsc && jest"
   },
   "keywords": [],
@@ -22,9 +25,11 @@
     "@types/supertest": "^2.0.12",
     "@types/ws": "^8.5.5",
     "concurrently": "^8.2.0",
+    "copyfiles": "^2.4.1",
     "jest": "^29.7.0",
     "mockttp": "^3.9.2",
     "nodemon": "^3.0.1",
+    "rimraf": "^5.0.5",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",

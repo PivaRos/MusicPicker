@@ -52,7 +52,7 @@ if (typeof localStorage === "undefined" || localStorage === null) {
   localStorage = new LocalStorage(path1);
 }
 
-const configPath = path.join(__dirname, "/DefaultAppConfig.json");
+const configPath = path.join(__dirname, "./DefaultAppConfig.json");
 let appConfig = require(configPath) as appConfig;
 app.locals.appConfig = appConfig;
 

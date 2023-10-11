@@ -10,13 +10,13 @@
     "noImplicitAny": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
- },  
+  },
+
  "include": [
       "src/**/*.ts",
-      "./DefaultAppConfig.json"
+      "./DefaultAppConfig.json",
+     "./src/rawHTML/*"
+    
     ],
-    "exclude": [
-      "node_modues"
-    ]
   
 }
