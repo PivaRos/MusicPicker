@@ -3,12 +3,6 @@ import SpotifyWebApi from "spotify-web-api-node";
 import { IsNotInQueue, checkWasAdded, hasDevice } from "../middleware";
 import { TrackItem, appConfig } from "./../interfaces";
 import NodeCache from "node-cache";
-var localStorage: any = null;
-
-if (typeof localStorage === "undefined" || localStorage === null) {
-  var LocalStorage = require("node-localstorage").LocalStorage;
-  localStorage = new LocalStorage("./scratch");
-}
 
 const QueueRouter = Router();
 

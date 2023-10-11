@@ -1,11 +1,13 @@
 import { Request, Response, Router } from "express";
+import path from "path";
 import SpotifyWebApi from "spotify-web-api-node";
 
 var localStorage: any = null;
-
 if (typeof localStorage === "undefined" || localStorage === null) {
   var LocalStorage = require("node-localstorage").LocalStorage;
-  localStorage = new LocalStorage("./scratch");
+  var path1 = path.join(process.env.pvPath || "", "./scratch");
+  console.log("callback : " + path1);
+  localStorage = new LocalStorage(path1);
 }
 
 const callbackRouter = Router();
@@ -26,6 +28,8 @@ callbackRouter.get("/spotify", async (req: Request, res: Response) => {
           localStorage.setItem("UpdateToken", resGrant.body.refresh_token);
           API.setAccessToken(resGrant.body.access_token);
           API.setRefreshToken(resGrant.body.refresh_token);
+          req.app.locals.API = API;
+          req.app.locals.refreshingAccessToken = false;
           console.log("\u001b[1;32m logged in successfully !");
           return res.redirect(process.env.success_route || "/success");
         } else {

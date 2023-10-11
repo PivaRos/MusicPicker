@@ -1,5 +1,6 @@
 import express, { Request, Response, Router } from "express";
 import SpotifyWebApi from "spotify-web-api-node";
+import { ApiAdapter } from "./modules/ApiAdapter";
 import path from "path";
 import session from "express-session";
 import AuthRouter from "./routers/auth";
@@ -17,7 +18,7 @@ import { activeUsers } from "./modules/activeUser";
 import { VoteModule } from "./modules/VoteModule";
 import NodeCache from "node-cache";
 import enumsRouter from "./routers/enums";
-import { rateLimit } from "express-rate-limit";
+import { json } from "node:stream/consumers";
 
 require("dotenv").config();
 
@@ -47,7 +48,8 @@ app.use(
 var localStorage: any = null;
 if (typeof localStorage === "undefined" || localStorage === null) {
   var LocalStorage = require("node-localstorage").LocalStorage;
-  localStorage = new LocalStorage("./scratch");
+  var path1 = path.join(process.env.pvPath || "", "./scratch");
+  localStorage = new LocalStorage(path1);
 }
 
 const configPath = path.join(__dirname, "/DefaultAppConfig.json");
@@ -60,11 +62,15 @@ const client_secret = process.env.client_secret || "";
 
 const HOST = process.env.HOST || "http://localhost:" + process.env.PORT + "/";
 
-const API = new SpotifyWebApi({
-  clientId: client_id,
-  clientSecret: client_secret,
-  redirectUri: HOST + redirect_route || "",
-});
+const API = new ApiAdapter(
+  {
+    clientId: client_id,
+    clientSecret: client_secret,
+    redirectUri: HOST + redirect_route || "",
+  },
+  process.env.givenRateLimit ? +process.env.givenRateLimit : 180, // default 180 requests
+  process.env.givenPerTime ? +process.env.givenPerTime : 1000 * 60 // default one minute
+);
 app.locals.API = API;
 
 address.mac((err, addr) => {
@@ -111,24 +117,16 @@ apiRouter.use("/player", PlayerRouter(app));
 apiRouter.use("/vote", RouterFunction(app, ActiveUsers));
 apiRouter.use("/enums", enumsRouter);
 
-const searchLimiter = rateLimit({
-  windowMs: 60 * 1000, // 60 seconds
-  limit: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-  standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  // store: ... , // Use an external store for more precise rate limiting
-});
-
-apiRouter.get(
-  "/search/:query",
-  searchLimiter,
-  async (req: Request, res: Response) => {
-    try {
-      const API = req.app.locals.API as SpotifyWebApi;
+apiRouter.get("/search/:query", async (req: Request, res: Response) => {
+  try {
+    const API = req.app.locals.API as ApiAdapter;
+    var check = API.checkBeforeRequest();
+    if (check === 0) {
       const searchResponse = await API.search(req.params.query, [
         "track",
         "artist",
       ]);
+      API.addToFollower();
 
       res.status(200);
       if (!searchResponse.body.tracks)
@@ -156,12 +154,20 @@ apiRouter.get(
           };
         })
       );
-    } catch (e) {
-      console.log(e);
-      return res.sendStatus(500);
+    } else if (check === -1) {
+      //slow down
+      return [res.status(429), res.json({ message: "SLOWDOWN" })];
+    } else {
+      return [
+        res.status(429),
+        res.setHeader("retry-after", Math.round(check / 1000)),
+      ];
     }
+  } catch (e) {
+    console.log(e);
+    return res.sendStatus(500);
   }
-);
+});
 
 const musicpicker = Router();
 const appconfig = app.locals.appConfig as appConfig;
