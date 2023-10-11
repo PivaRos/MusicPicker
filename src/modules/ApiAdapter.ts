@@ -18,5 +18,7 @@ export class ApiAdapter extends SpotifyWebApi {
     return this.rateLimitFollower.GoodRate();
   };
 
-  checkBeforeRequest = () => this.rateLimitFollower.checkforAllow();
+  checkBeforeRequest = () => {
+    return this.rateLimitFollower.checkforAllow();
+  };
 }

@@ -26,14 +26,14 @@ export class RateLimitFollower {
   //returns true if on good rate false if need to ease if the requests
   GoodRate = () => {
     this.checktime();
-    return (
-      Date.now() - this.lastCheck / this.Requests <=
-      this.maxLimit / this.PerTime
-    );
+
+    const currentRate = this.Requests / (Date.now() - this.lastCheck);
+    const expectedRate = this.maxLimit / this.PerTime;
+    return currentRate <= expectedRate;
   };
 
   checkforAllow = () => {
-    if (this.Requests < this.maxLimit) {
+    if (this.Requests >= this.maxLimit) {
       return this.PerTime - (Date.now() - this.lastCheck);
     }
     if (this.GoodRate()) {
@@ -44,10 +44,12 @@ export class RateLimitFollower {
   };
 
   addToFollow = (number: number) => {
-    if (this.Requests < this.maxLimit) {
+    if (this.Requests + number > this.maxLimit) {
+      return false;
+    } else {
       this.Requests += number;
       return true;
-    } else return false;
+    }
   };
 
   getRequests = () => this.Requests;

@@ -68,8 +68,8 @@ const API = new ApiAdapter(
     clientSecret: client_secret,
     redirectUri: HOST + redirect_route || "",
   },
-  1000 * 60,
-  160
+  process.env.givenRateLimit ? +process.env.givenRateLimit : 180, // default 180 requests
+  process.env.givenPerTime ? +process.env.givenPerTime : 1000 * 60 // default one minute
 );
 app.locals.API = API;
 
