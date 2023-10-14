@@ -29,9 +29,6 @@ export class RateLimitFollower {
 
     const currentRate = this.Requests / (Date.now() - this.lastCheck);
     const expectedRate = this.maxLimit / this.PerTime;
-
-    console.log(currentRate);
-    console.log(expectedRate);
     if (Number.isNaN(currentRate)) return true;
     return currentRate <= expectedRate;
   };
