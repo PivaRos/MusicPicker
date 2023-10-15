@@ -26,12 +26,12 @@ const router = (app: any) => {
           if (allResult[0].status === "fulfilled") {
             result = allResult[0].value;
           } else {
-            throw new Error(allResult[0].reason);
+            throw allResult[0].reason;
           }
           if (allResult[1].status === "fulfilled") {
             result2 = allResult[1].value;
           } else {
-            throw new Error(allResult[1].reason);
+            throw allResult[1].reason;
           }
           let theAlbum;
           let genres;
@@ -62,9 +62,10 @@ const router = (app: any) => {
           throw new Error("not enough requests left");
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       app.locals.playerState = undefined;
       console.log(e);
+      console.log({ ...e });
     }
   }, 1550);
 
