@@ -15,9 +15,7 @@
  "include": [
       "src/**/*.ts",
       "./DefaultAppConfig.json",
-     "./src/rawHTML/*"
-    
+     "./src/rawHTML/*"    
     ],
-    "exclude": ["src/build"]
   
 }

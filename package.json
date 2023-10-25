@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run build --watch\" \"nodemon -q dist/src/musicpicker.js\"",
     "clean": "rimraf dist/",
-    "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css src/DefaultAppConfig.json dist/src",
+    "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css src/**/*.js src/DefaultAppConfig.json dist/src",
     "build": "npm run clean && tsc && npm run copy-files",
     "start": "npm run build && node ./dist/src/musicpicker.js",
     "test": "npm run build && jest"
